@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NewPatient, Gender } from "./types";
+import { NewPatient, Gender, Entry } from "./types";
 
 const errorStr = (name: string, value: any): string => {
   return `Missing or incorrect ${name}: ${value}`;
@@ -52,6 +52,18 @@ const parseOccupation = (occupation: any): string => {
   return occupation;
 };
 
+// eslint-disable-next-line
+const isEntry = (_param: any): _param is Entry => {
+  return true;
+};
+
+const parseEntries = (entries: any): Entry[] => {
+  // if (!entries || !Array.isArray(entries) || !entries.every(isEntry)) {
+  //   throw new Error(errorStr("entries", entries));
+  // }
+  return entries;
+};
+
 export const toNewPatient = (object: any): NewPatient => {
   const newPatient = {
     name: parseName(object.name),
@@ -59,6 +71,7 @@ export const toNewPatient = (object: any): NewPatient => {
     ssn: parseSSN(object.ssn),
     gender: parseGender(object.gender),
     occupation: parseOccupation(object.occupation),
+    entries: parseEntries(object.entries),
   };
   return newPatient;
 };
