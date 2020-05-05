@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Header, Loader, Icon, SemanticICONS, Label } from "semantic-ui-react";
 import axios from "axios";
 import { apiBaseUrl } from "../constants";
-import { useStateValue } from "../state";
+import { useStateValue, updatePatient } from "../state";
 import { Patient, Gender } from "../types";
 
 const iconsByGender: Record<Gender, SemanticICONS> = {
@@ -24,10 +24,7 @@ const PatientPage: React.FC = () => {
         const { data: fullPatient } = await axios.get<Patient>(
           `${apiBaseUrl}/patients/${patientId}`
         );
-        dispatch({
-          type: "UPDATE_PATIENT",
-          payload: fullPatient,
-        });
+        dispatch(updatePatient(fullPatient));
       } else {
         setFullPatient(true);
       }
