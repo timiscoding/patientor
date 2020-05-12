@@ -5,6 +5,8 @@ import axios from "axios";
 import { apiBaseUrl } from "../constants";
 import { useStateValue, updatePatient } from "../state";
 import { Patient, Gender } from "../types";
+import EventList from "./EventList";
+import { sortByDate } from "../utils";
 
 const iconsByGender: Record<Gender, SemanticICONS> = {
   [Gender.Male]: "man",
@@ -65,6 +67,7 @@ const PatientPage: React.FC = () => {
           </Header.Subheader>
         </Header.Content>
       </Header>
+      <EventList entries={patient.entries?.sort(sortByDate) || []} />
     </div>
   );
 };
