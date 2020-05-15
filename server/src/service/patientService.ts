@@ -1,5 +1,5 @@
 import patientsData from "../../data/patients";
-import { Patient, PublicPatient, NewPatient } from "../types";
+import { Patient, PublicPatient, NewPatient, NewEntry, Entry } from "../types";
 
 const patients: Patient[] = patientsData;
 
@@ -11,10 +11,6 @@ const generateId = (): string => {
 
 const getPatient = (id: string): Patient | undefined => {
   const patient = patients.find((p) => p.id === id);
-  // if (isPatient(patient)) {
-  //   const { ssn, entries, ...publicPatient } = patient;
-  //   return publicPatient;
-  // }
   return patient;
 };
 
@@ -31,8 +27,24 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
+const addEntry = (id: Patient["id"], entry: NewEntry): Entry => {
+  const newEntry = {
+    id: generateId(),
+    date: new Date().toISOString().slice(0, 10),
+    ...entry,
+  };
+  const patient = patients.find((p) => p.id === id);
+  if (!patient) {
+    throw new Error("Patient not found");
+  }
+
+  patient.entries.push(newEntry);
+  return newEntry;
+};
+
 export default {
   getPatient,
   getPatients,
   addPatient,
+  addEntry,
 };
