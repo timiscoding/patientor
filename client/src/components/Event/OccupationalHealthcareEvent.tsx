@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, Icon, Label } from "semantic-ui-react";
-import { OccupationalHealthcareEntry } from "../types";
+import { OccupationalHealthcareEntry } from "../../types";
 import BaseEvent from "./BaseEvent";
 
 interface Props {

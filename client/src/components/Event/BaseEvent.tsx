@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { Table, List, Icon, Accordion } from "semantic-ui-react";
-import { Entry } from "../types";
-import Diagnoses from "./Diagnoses";
-import { AccordionContext } from "./EventList";
-import { camelCaseToSpace } from "../utils";
+import { Entry } from "../../types";
+import Diagnoses from "../Diagnoses";
+import { AccordionContext } from "../../PatientPage/EventList";
+import { camelCaseToSpace } from "../../utils";
 
 interface Props {
   entry: Entry;

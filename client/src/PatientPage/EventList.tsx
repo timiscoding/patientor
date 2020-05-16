@@ -8,9 +8,11 @@ import {
   Accordion,
 } from "semantic-ui-react";
 import { assertNever } from "../utils";
-import HealthCheckEvent from "./HealthCheckEvent";
-import HospitalEvent from "./HospitalEvent";
-import OccupationalHealthcareEvent from "./OccupationalHealthcareEvent";
+import {
+  OccupationalHealthcareEvent,
+  HealthCheckEvent,
+  HospitalEvent,
+} from "../components/Event";
 
 const EntryDetails: React.FC<{ entry: Entry; index: number }> = ({
   entry,

@@ -1,8 +1,8 @@
 import React from "react";
 import { Table } from "semantic-ui-react";
-import { HealthCheckEntry, HealthCheckRating } from "../types";
+import { HealthCheckEntry, HealthCheckRating } from "../../types";
 import BaseEvent from "./BaseEvent";
-import { camelCaseToSpace } from "../utils";
+import { camelCaseToSpace } from "../../utils";
 
 interface Props {
   entry: HealthCheckEntry;

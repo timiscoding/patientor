@@ -1,6 +1,6 @@
 import React from "react";
 import { Table } from "semantic-ui-react";
-import { HospitalEntry } from "../types";
+import { HospitalEntry } from "../../types";
 import BaseEvent from "./BaseEvent";
 
 interface Props {
