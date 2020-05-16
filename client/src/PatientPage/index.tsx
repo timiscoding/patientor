@@ -7,6 +7,7 @@ import { useStateValue, updatePatient } from "../state";
 import { Patient, Gender } from "../types";
 import EventList from "./EventList";
 import { sortByDate } from "../utils";
+import AddEventForm from "../components/AddEventForm";
 
 const iconsByGender: Record<Gender, SemanticICONS> = {
   [Gender.Male]: "man",
@@ -68,6 +69,7 @@ const PatientPage: React.FC = () => {
         </Header.Content>
       </Header>
       <EventList entries={patient.entries?.sort(sortByDate) || []} />
+      <AddEventForm />
     </div>
   );
 };

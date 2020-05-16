@@ -65,3 +65,6 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+type ExcludedNewEntry = "id" | "date";
+export type NewHospitalEntry = Omit<HospitalEntry, ExcludedNewEntry>;

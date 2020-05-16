@@ -1,5 +1,5 @@
 import { State } from "./state";
-import { Patient } from "../types";
+import { Patient, Diagnosis } from "../types";
 
 export const setPatientList = (patientListFromApi: Patient[]): Action => ({
   type: "SET_PATIENT_LIST",
@@ -16,6 +16,13 @@ export const updatePatient = (patient: Patient): Action => ({
   payload: patient,
 });
 
+export const setDiagnosisList = (
+  diagnosisListFromApi: Diagnosis[]
+): Action => ({
+  type: "SET_DIAGNOSIS_LIST",
+  payload: diagnosisListFromApi,
+});
+
 export type Action =
   | {
       type: "SET_PATIENT_LIST";
@@ -28,6 +35,10 @@ export type Action =
   | {
       type: "UPDATE_PATIENT";
       payload: Patient;
+    }
+  | {
+      type: "SET_DIAGNOSIS_LIST";
+      payload: Diagnosis[];
     };
 
 const assertNever = (arg: never): never => {
@@ -65,6 +76,11 @@ export const reducer = (state: State, action: Action): State => {
             ...action.payload,
           },
         },
+      };
+    case "SET_DIAGNOSIS_LIST":
+      return {
+        ...state,
+        diagnoses: action.payload,
       };
     default:
       return assertNever(action);
