@@ -1,6 +1,6 @@
 import express from "express";
 import { patientService } from "../service";
-import { toNewPatient, toNewEntry } from "../utils";
+import { toNewPatient, toNewEntry, sleep } from "../utils";
 
 const router = express.Router();
 
@@ -26,10 +26,11 @@ router.post("/", (req, res) => {
   }
 });
 
-router.post("/:id/entries", (req, res) => {
+router.post("/:id/entries", async (req, res) => {
   try {
     const newEntry = toNewEntry(req.body);
     const addedEntry = patientService.addEntry(req.params.id, newEntry);
+    await sleep(5000);
     res.status(201).json(addedEntry);
   } catch (err) {
     res.status(400).send(err.message);

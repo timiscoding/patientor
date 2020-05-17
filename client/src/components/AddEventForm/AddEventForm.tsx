@@ -1,19 +1,35 @@
 import React from "react";
-import { Formik, Form } from "formik";
+import { Formik, FormikHelpers } from "formik";
+import {
+  Form,
+  Button,
+  Header,
+  Segment,
+  Icon,
+  Message,
+} from "semantic-ui-react";
 import { object, string, array } from "yup";
-import { TextField, DiagnosisSelection } from "./FormField";
+import { FormField, DiagnosisSelection } from "./FormField";
+import { NewHospitalEntry } from "../../types";
 
-const AddEventForm = () => {
+const AddEventForm: React.FC<{
+  onSubmit(
+    values: NewHospitalEntry,
+    formikBag: FormikHelpers<NewHospitalEntry>
+  ): void;
+}> = ({ onSubmit }) => {
   return (
-    <div>
+    <Segment>
+      <Header as="h2">New Event</Header>
       <Formik
         initialValues={{
-          description: "a",
-          specialist: "b",
+          type: "Hospital",
+          description: "",
+          specialist: "",
           diagnosisCodes: [],
           discharge: {
-            date: "2020-01-01",
-            criteria: "s",
+            date: "",
+            criteria: "",
           },
         }}
         validationSchema={object()
@@ -29,29 +45,91 @@ const AddEventForm = () => {
               .required("Required field"),
           })
           .required("Required field")}
-        onSubmit={(data) => alert(JSON.stringify(data, null, 2))}
+        onSubmit={onSubmit}
       >
-        {({ setFieldTouched, setFieldValue }) => (
-          <Form className="form ui">
-            <TextField label="Description" name="description" required />
-            <TextField label="Specialist" name="specialist" required />
-            <DiagnosisSelection
-              setFieldTouched={setFieldTouched}
-              setFieldValue={setFieldValue}
-            />
-            <TextField label="Criteria" name="discharge.criteria" required />
-            <TextField
-              label="Date"
-              name="discharge.date"
-              placeholder="YYYY-MM-DD"
-              required
-            />
-
-            <button type="submit">Add event</button>
-          </Form>
-        )}
+        {({
+          setFieldTouched,
+          setFieldValue,
+          dirty,
+          isValid,
+          handleReset,
+          handleSubmit,
+          isSubmitting,
+          setStatus,
+          status,
+        }) => {
+          const onClick = () => {
+            // clear last Message if user interacts with form again
+            setStatus({});
+          };
+          return (
+            <Form
+              onReset={handleReset}
+              onSubmit={handleSubmit}
+              {...status}
+              onClick={onClick}
+            >
+              <FormField
+                label="Description"
+                name="description"
+                readOnly={isSubmitting}
+                required
+              />
+              <FormField
+                label="Specialist"
+                name="specialist"
+                readOnly={isSubmitting}
+                required
+              />
+              <DiagnosisSelection
+                name="diagnosisCodes"
+                readOnly={isSubmitting}
+              />
+              <Form.Group>
+                <FormField
+                  label="Discharge Date"
+                  name="discharge.date"
+                  type="date"
+                  width={3}
+                  readOnly={isSubmitting}
+                  required
+                />
+                <FormField
+                  label="Discharge Criteria"
+                  name="discharge.criteria"
+                  width={13}
+                  readOnly={isSubmitting}
+                  required
+                />
+              </Form.Group>
+              <Message
+                success
+                header="Success"
+                content="A new event has been created"
+              />
+              <Message
+                error
+                header="Error"
+                content="Event could not be created. Please try again."
+              />
+              <Button
+                type="submit"
+                disabled={!dirty || !isValid || isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Icon name="spinner" loading />
+                    Adding event...
+                  </>
+                ) : (
+                  "Add event"
+                )}
+              </Button>
+            </Form>
+          );
+        }}
       </Formik>
-    </div>
+    </Segment>
   );
 };
 

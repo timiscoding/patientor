@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Header, Loader, Icon, SemanticICONS, Label } from "semantic-ui-react";
 import axios from "axios";
-import { apiBaseUrl } from "../constants";
-import { useStateValue, updatePatient } from "../state";
-import { Patient, Gender } from "../types";
+import { useAsyncCallback } from "react-async-hook";
+import { FormikHelpers } from "formik";
+import { useStateValue, updatePatient, addEntry } from "../state";
+import { Patient, Gender, NewHospitalEntry, Entry } from "../types";
 import EventList from "./EventList";
 import { sortByDate } from "../utils";
+import { apiBaseUrl } from "../constants";
 import AddEventForm from "../components/AddEventForm";
 
 const iconsByGender: Record<Gender, SemanticICONS> = {
@@ -19,6 +21,30 @@ const PatientPage: React.FC = () => {
   const [{ patients }, dispatch] = useStateValue();
   const [fullPatient, setFullPatient] = useState<boolean>(false);
   const { id: patientId } = useParams();
+  const postEvent = async (
+    entry: NewHospitalEntry,
+    formikBag: FormikHelpers<NewHospitalEntry>
+  ) => {
+    formikBag.setStatus({});
+    try {
+      const resp = await axios.post<Entry>(
+        `${apiBaseUrl}/patients/${patientId}/entries`,
+        entry
+      );
+      formikBag.resetForm({
+        status: {
+          success: true,
+        },
+      });
+      return resp.data;
+    } catch (err) {
+      formikBag.setStatus({
+        error: true,
+      });
+      throw err;
+    }
+  };
+  const asyncAddEvent = useAsyncCallback(postEvent);
   const patient = patients[patientId];
 
   useEffect(() => {
@@ -34,6 +60,12 @@ const PatientPage: React.FC = () => {
     };
     fetchPatient();
   }, [patientId, dispatch, patient]);
+
+  useEffect(() => {
+    if (asyncAddEvent.result) {
+      dispatch(addEntry(patientId, asyncAddEvent.result));
+    }
+  }, [dispatch, asyncAddEvent.result, patientId]);
 
   if (!fullPatient) {
     return <Loader active>Loading patient...</Loader>;
@@ -69,7 +101,7 @@ const PatientPage: React.FC = () => {
         </Header.Content>
       </Header>
       <EventList entries={patient.entries?.sort(sortByDate) || []} />
-      <AddEventForm />
+      <AddEventForm onSubmit={asyncAddEvent.execute} />
     </div>
   );
 };

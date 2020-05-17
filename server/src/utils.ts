@@ -220,3 +220,12 @@ export const toNewEntry = (object: any): NewEntry => {
 
   return newEntry;
 };
+
+// simulate a slow server response
+export const sleep = async (ms: number, error?: string): Promise<undefined> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      !error ? resolve() : reject({ message: error });
+    }, ms);
+  });
+};

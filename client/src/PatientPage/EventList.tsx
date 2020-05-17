@@ -60,7 +60,7 @@ const EventList: React.FC<{ entries: Entry[] }> = ({ entries }) => {
     );
   }
   return (
-    <div>
+    <Segment>
       <Header as="h2">History</Header>
       <Accordion styled fluid>
         <AccordionContext.Provider
@@ -74,7 +74,7 @@ const EventList: React.FC<{ entries: Entry[] }> = ({ entries }) => {
           ))}
         </AccordionContext.Provider>
       </Accordion>
-    </div>
+    </Segment>
   );
 };
 

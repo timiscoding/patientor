@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
+import { ErrorMessage, Field, FieldProps, useField } from "formik";
 import { Dropdown, DropdownProps, Form, Icon } from "semantic-ui-react";
 import axios from "axios";
 import { useAsyncCallback } from "react-async-hook";
@@ -82,14 +82,11 @@ export const NumberField: React.FC<NumberProps> = ({
   </Form.Field>
 );
 
-export const DiagnosisSelection = ({
-  setFieldValue,
-  setFieldTouched,
-}: {
-  setFieldValue: FormikProps<{ diagnosisCodes: string[] }>["setFieldValue"];
-  setFieldTouched: FormikProps<{ diagnosisCodes: string[] }>["setFieldTouched"];
-}) => {
-  const field = "diagnosisCodes";
+export const DiagnosisSelection: React.FC<{
+  name: string;
+  readOnly?: boolean;
+}> = ({ name, readOnly = false }) => {
+  const [field, meta, helpers] = useField(name);
   const [{ diagnoses }, dispatch] = useStateValue();
 
   const fetchDiagnoses = async (): Promise<Diagnosis[]> => {
@@ -108,8 +105,8 @@ export const DiagnosisSelection = ({
     _event: React.SyntheticEvent<HTMLElement, Event>,
     data: DropdownProps
   ) => {
-    setFieldTouched(field, true);
-    setFieldValue(field, data.value);
+    helpers.setTouched(true);
+    helpers.setValue(data.value);
   };
 
   const stateOptions = diagnoses.map((diagnosis) => ({
@@ -119,7 +116,7 @@ export const DiagnosisSelection = ({
   }));
 
   return (
-    <Form.Field>
+    <Form.Field error={meta.touched && meta.error}>
       <label>Diagnoses</label>
       <Dropdown
         lazyLoad
@@ -132,9 +129,14 @@ export const DiagnosisSelection = ({
           ) : asyncDiagnosesOnClick.error ? (
             <div>
               <Icon name="warning sign" color="red" />
-              Something went wrong. Please try again
+              Error fetching diagnosis codes. Please try again
             </div>
-          ) : null
+          ) : (
+            <div>
+              <Icon name="search" />
+              No results
+            </div>
+          )
         }
         fluid
         multiple
@@ -143,8 +145,9 @@ export const DiagnosisSelection = ({
         options={stateOptions}
         onChange={onChange}
         onOpen={asyncDiagnosesOnClick.execute}
+        disabled={readOnly}
+        value={field.value}
       />
-      <ErrorMessage name={field} />
     </Form.Field>
   );
 };
