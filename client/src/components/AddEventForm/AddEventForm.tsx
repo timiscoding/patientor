@@ -9,8 +9,25 @@ import {
   Message,
 } from "semantic-ui-react";
 import { object, string, array } from "yup";
+import {
+  HospitalEvent,
+  HealthCheckEvent,
+  OccupationalHealthcareEvent,
+} from "./eventTypes";
 import { FormField, DiagnosisSelection } from "./FormField";
-import { NewHospitalEntry } from "../../types";
+import {
+  NewEntry,
+  NewHealthCheckEntry,
+  NewHospitalEntry,
+  NewOccupationalHealthcareEntry,
+  EntryType,
+} from "../../types";
+
+// const getEvent: Record<EntryType, React.FC> = {
+//   [EntryType.Hospital]: HospitalEvent,
+//   [EntryType.HealthCheck]: HealthCheckEvent,
+//   [EntryType.OccupationalHealthcare]: OccupationalHealthcareEvent,
+// };
 
 const AddEventForm: React.FC<{
   onSubmit(
@@ -18,38 +35,31 @@ const AddEventForm: React.FC<{
     formikBag: FormikHelpers<NewHospitalEntry>
   ): void;
 }> = ({ onSubmit }) => {
+  const EventType = HospitalEvent;
+  const initialValues = {
+    type: EventType.type,
+    description: "",
+    specialist: "",
+    diagnosisCodes: [],
+    ...EventType.initialValues,
+  } as NewHospitalEntry;
+  const schemaShape = {
+    description: string().required("Required field"),
+    specialist: string().required("Required field"),
+    disagnosisCodes: array().of(string().required()),
+    ...EventType.validationSchema,
+  };
   return (
     <Segment>
       <Header as="h2">New Event</Header>
       <Formik
-        initialValues={{
-          type: "Hospital",
-          description: "",
-          specialist: "",
-          diagnosisCodes: [],
-          discharge: {
-            date: "",
-            criteria: "",
-          },
-        }}
+        initialValues={initialValues}
         validationSchema={object()
-          .shape({
-            description: string().required("Required field"),
-            specialist: string().required("Required field"),
-            disagnosisCodes: array().of(string().required()),
-            discharge: object()
-              .shape({
-                date: string().required("Required field"),
-                criteria: string().required("Required field"),
-              })
-              .required("Required field"),
-          })
+          .shape(schemaShape)
           .required("Required field")}
         onSubmit={onSubmit}
       >
         {({
-          setFieldTouched,
-          setFieldValue,
           dirty,
           isValid,
           handleReset,
@@ -85,23 +95,7 @@ const AddEventForm: React.FC<{
                 name="diagnosisCodes"
                 readOnly={isSubmitting}
               />
-              <Form.Group>
-                <FormField
-                  label="Discharge Date"
-                  name="discharge.date"
-                  type="date"
-                  width={3}
-                  readOnly={isSubmitting}
-                  required
-                />
-                <FormField
-                  label="Discharge Criteria"
-                  name="discharge.criteria"
-                  width={13}
-                  readOnly={isSubmitting}
-                  required
-                />
-              </Form.Group>
+              <EventType />
               <Message
                 success
                 header="Success"

@@ -5,7 +5,14 @@ import axios from "axios";
 import { useAsyncCallback } from "react-async-hook";
 import { FormikHelpers } from "formik";
 import { useStateValue, updatePatient, addEntry } from "../state";
-import { Patient, Gender, NewHospitalEntry, Entry } from "../types";
+import {
+  Patient,
+  Gender,
+  NewHospitalEntry,
+  NewHealthCheckEntry,
+  NewOccupationalHealthcareEntry,
+  Entry,
+} from "../types";
 import EventList from "./EventList";
 import { sortByDate } from "../utils";
 import { apiBaseUrl } from "../constants";

@@ -26,6 +26,10 @@ const isString = (text: any): text is string => {
   return typeof text === "string" || text instanceof String;
 };
 
+const isDateStr = (text: any): boolean => {
+  return isString(text) && !isNaN(Date.parse(text));
+};
+
 const parseString = (name: string, param: any): string => {
   if (!param || !isString(param)) {
     throw new Error(errorStr(name, param));
@@ -115,10 +119,7 @@ const isHealthCheckRating = (param: any): param is HealthCheckRating => {
 const parseHealthCheck = (
   params: any
 ): Omit<NewHealthCheckEntry, keyof NewBaseEntry | "type"> => {
-  if (
-    !params.healthCheckRating ||
-    !isHealthCheckRating(params.healthCheckRating)
-  ) {
+  if (!isHealthCheckRating(params.healthCheckRating)) {
     throw new Error(
       "HealthCheck entry missing or incorrect healthCheckRating field"
     );
@@ -132,7 +133,7 @@ const parseHealthCheck = (
 const isDischarge = (params: any): params is Discharge => {
   return (
     params.date &&
-    isString(params.date) &&
+    isDateStr(params.date) &&
     params.criteria &&
     isString(params.criteria)
   );
@@ -152,10 +153,14 @@ const parseHospital = (
 const isSickLeave = (params: any): params is SickLeave => {
   return (
     params.startDate &&
-    isString(params.startDate) &&
+    isDateStr(params.startDate) &&
     params.endDate &&
-    isString(params.endDate)
+    isDateStr(params.endDate)
   );
+};
+
+const isSickLeaveEmpty = (params: any): boolean => {
+  return params?.startDate?.length === 0 && params?.endDate?.length === 0;
 };
 
 const parseOccupationalHealthcare = (
@@ -169,15 +174,15 @@ const parseOccupationalHealthcare = (
       "OccupationalHealthcare entry missing or incorrect employerName field"
     );
   }
+  if (isSickLeaveEmpty(params.sickLeave)) {
+    return partial;
+  }
   if (params.sickLeave && !isSickLeave(params.sickLeave)) {
     throw new Error(
       "OccupationalHealthcare entry missing or incorrect sickLeave fields"
     );
   }
-
-  return params.sickLeave
-    ? { ...partial, sickLeave: params.sickLeave }
-    : partial;
+  return { ...partial, sickLeave: params.sickLeave };
 };
 
 export const toNewEntry = (object: any): NewEntry => {

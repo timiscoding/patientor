@@ -16,7 +16,9 @@ const FormField: React.FC<{
       width={width}
       label={label}
       type={type}
-      error={meta.touched && meta.error}
+      error={
+        meta.touched && meta.error && { content: meta.error, pointing: "above" }
+      }
       control={Input}
       {...field}
       {...props}

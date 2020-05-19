@@ -1,3 +1,5 @@
+import { Schema } from "yup";
+
 export interface Diagnosis {
   code: string;
   name: string;
@@ -20,6 +22,12 @@ export interface Patient {
   entries?: Entry[];
 }
 
+export enum EntryType {
+  Hospital = "Hospital",
+  OccupationalHealthcare = "OccupationalHealthcare",
+  HealthCheck = "HealthCheck",
+}
+
 export interface BaseEntry {
   id: string;
   description: string;
@@ -36,7 +44,7 @@ export enum HealthCheckRating {
 }
 
 export interface HealthCheckEntry extends BaseEntry {
-  type: "HealthCheck";
+  type: EntryType.HealthCheck;
   healthCheckRating: HealthCheckRating;
 }
 
@@ -46,7 +54,7 @@ interface SickLeave {
 }
 
 export interface OccupationalHealthcareEntry extends BaseEntry {
-  type: "OccupationalHealthcare";
+  type: EntryType.OccupationalHealthcare;
   employerName: string;
   sickLeave?: SickLeave;
 }
@@ -57,7 +65,7 @@ interface Discharge {
 }
 
 export interface HospitalEntry extends BaseEntry {
-  type: "Hospital";
+  type: EntryType.Hospital;
   discharge: Discharge;
 }
 
@@ -66,5 +74,26 @@ export type Entry =
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
 
+type Modify<TOrig, TReplace> = Omit<TOrig, keyof TReplace> & TReplace;
 type ExcludedNewEntry = "id" | "date";
 export type NewHospitalEntry = Omit<HospitalEntry, ExcludedNewEntry>;
+export type NewOccupationalHealthcareEntry = Omit<
+  OccupationalHealthcareEntry,
+  ExcludedNewEntry
+>;
+// modify healthCheckRating to allow for initial value in forms
+export type NewHealthCheckEntry = Modify<
+  Omit<HealthCheckEntry, ExcludedNewEntry>,
+  { healthCheckRating: HealthCheckRating | "" }
+>;
+export type NewEntry =
+  | NewHospitalEntry
+  | NewOccupationalHealthcareEntry
+  | NewHealthCheckEntry;
+
+type InitValKeys<T> = Omit<T, keyof BaseEntry | "type">;
+export type Event<P, T extends NewEntry> = React.FC<P> & {
+  initialValues: { [P in keyof InitValKeys<T>]: InitValKeys<T>[P] };
+  validationSchema: { [P in keyof Omit<T, keyof Entry>]: Schema<any> };
+  type: T["type"];
+};

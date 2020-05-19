@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Entry } from "../types";
+import { Entry, EntryType } from "../types";
 import {
   Header,
   Segment,
@@ -19,11 +19,11 @@ const EntryDetails: React.FC<{ entry: Entry; index: number }> = ({
   index,
 }) => {
   switch (entry.type) {
-    case "HealthCheck":
+    case EntryType.HealthCheck:
       return <HealthCheckEvent entry={entry} index={index} />;
-    case "Hospital":
+    case EntryType.Hospital:
       return <HospitalEvent entry={entry} index={index} />;
-    case "OccupationalHealthcare":
+    case EntryType.OccupationalHealthcare:
       return <OccupationalHealthcareEvent entry={entry} index={index} />;
     default:
       return assertNever(entry);
