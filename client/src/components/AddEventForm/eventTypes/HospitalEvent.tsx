@@ -6,10 +6,14 @@ import { object, string, date } from "yup";
 import { FormField } from "../FormField";
 import { NewHospitalEntry, Event, EntryType } from "../../../types";
 
-const HospitalEvent: Event<{}, NewHospitalEntry> = () => {
+const HospitalEvent: Event<
+  { className: string; style: React.CSSProperties },
+  NewHospitalEntry
+> = ({ style, className }) => {
   const { isSubmitting } = useFormikContext();
+
   return (
-    <>
+    <div style={style} className={className}>
       <Segment>
         <Label attached="top left">
           <Icon name="sign out" />
@@ -33,7 +37,7 @@ const HospitalEvent: Event<{}, NewHospitalEntry> = () => {
           />
         </Form.Group>
       </Segment>
-    </>
+    </div>
   );
 };
 
@@ -42,15 +46,15 @@ HospitalEvent.initialValues = {
     date: "",
     criteria: "",
   },
+  type: EntryType.Hospital,
 };
 
 HospitalEvent.validationSchema = {
-  discharge: object()
-    .shape({
-      date: date().required("Required field"),
-      criteria: string().required("Required field"),
-    })
-    .required("Required field"),
+  discharge: object().shape({
+    date: date().required("Required field"),
+    criteria: string().required("Required field"),
+  }),
+  type: string().equals(Object.keys(EntryType)).required(),
 };
 
 HospitalEvent.type = EntryType.Hospital;

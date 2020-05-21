@@ -1,129 +1,99 @@
 import React from "react";
-import { Formik, FormikHelpers } from "formik";
 import {
+  FormikHelpers,
+  FormikState,
+  FormikHandlers,
+  FormikComputedProps,
+} from "formik";
+import {
+  Transition,
   Form,
   Button,
-  Header,
   Segment,
   Icon,
   Message,
 } from "semantic-ui-react";
-import { object, string, array } from "yup";
-import {
-  HospitalEvent,
-  HealthCheckEvent,
-  OccupationalHealthcareEvent,
-} from "./eventTypes";
-import { FormField, DiagnosisSelection } from "./FormField";
-import {
-  NewEntry,
-  NewHealthCheckEntry,
-  NewHospitalEntry,
-  NewOccupationalHealthcareEntry,
-  EntryType,
-} from "../../types";
 
-// const getEvent: Record<EntryType, React.FC> = {
-//   [EntryType.Hospital]: HospitalEvent,
-//   [EntryType.HealthCheck]: HealthCheckEvent,
-//   [EntryType.OccupationalHealthcare]: OccupationalHealthcareEvent,
-// };
+import EventTypeForm from "./EventTypeForm";
+import { FormField, DiagnosisSelection } from "./FormField";
+import { NewEntry, FormSubmitStatus } from "../../types";
 
 const AddEventForm: React.FC<{
-  onSubmit(
-    values: NewHospitalEntry,
-    formikBag: FormikHelpers<NewHospitalEntry>
-  ): void;
-}> = ({ onSubmit }) => {
-  const EventType = HospitalEvent;
-  const initialValues = {
-    type: EventType.type,
-    description: "",
-    specialist: "",
-    diagnosisCodes: [],
-    ...EventType.initialValues,
-  } as NewHospitalEntry;
-  const schemaShape = {
-    description: string().required("Required field"),
-    specialist: string().required("Required field"),
-    disagnosisCodes: array().of(string().required()),
-    ...EventType.validationSchema,
+  dirty: FormikComputedProps<NewEntry>["dirty"];
+  isValid: FormikComputedProps<NewEntry>["isValid"];
+  handleReset: FormikHandlers["handleReset"];
+  handleSubmit: FormikHandlers["handleSubmit"];
+  isSubmitting: FormikState<NewEntry>["isSubmitting"];
+  setStatus: FormikHelpers<NewEntry>["setStatus"];
+  status: FormSubmitStatus;
+}> = ({
+  dirty,
+  isValid,
+  handleReset,
+  handleSubmit,
+  isSubmitting,
+  setStatus,
+  status,
+}) => {
+  const onClick = () => {
+    // clear last Message if user interacts with form again
+    setStatus(FormSubmitStatus.Inactive);
   };
   return (
-    <Segment>
-      <Header as="h2">New Event</Header>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={object()
-          .shape(schemaShape)
-          .required("Required field")}
-        onSubmit={onSubmit}
+    <Form onReset={handleReset} onSubmit={handleSubmit} onClick={onClick}>
+      <Segment attached>
+        <FormField
+          label="Description"
+          name="description"
+          readOnly={isSubmitting}
+          required
+        />
+        <FormField
+          label="Specialist"
+          name="specialist"
+          readOnly={isSubmitting}
+          required
+        />
+        <DiagnosisSelection name="diagnosisCodes" readOnly={isSubmitting} />
+        <EventTypeForm />
+      </Segment>
+      <Segment attached>
+        <Button type="submit" disabled={!dirty || !isValid || isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Icon name="spinner" loading />
+              Adding event...
+            </>
+          ) : (
+            "Add event"
+          )}
+        </Button>
+      </Segment>
+      <Transition
+        animation="fade down"
+        visible={status === FormSubmitStatus.Success}
       >
-        {({
-          dirty,
-          isValid,
-          handleReset,
-          handleSubmit,
-          isSubmitting,
-          setStatus,
-          status,
-        }) => {
-          const onClick = () => {
-            // clear last Message if user interacts with form again
-            setStatus({});
-          };
-          return (
-            <Form
-              onReset={handleReset}
-              onSubmit={handleSubmit}
-              {...status}
-              onClick={onClick}
-            >
-              <FormField
-                label="Description"
-                name="description"
-                readOnly={isSubmitting}
-                required
-              />
-              <FormField
-                label="Specialist"
-                name="specialist"
-                readOnly={isSubmitting}
-                required
-              />
-              <DiagnosisSelection
-                name="diagnosisCodes"
-                readOnly={isSubmitting}
-              />
-              <EventType />
-              <Message
-                success
-                header="Success"
-                content="A new event has been created"
-              />
-              <Message
-                error
-                header="Error"
-                content="Event could not be created. Please try again."
-              />
-              <Button
-                type="submit"
-                disabled={!dirty || !isValid || isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Icon name="spinner" loading />
-                    Adding event...
-                  </>
-                ) : (
-                  "Add event"
-                )}
-              </Button>
-            </Form>
-          );
-        }}
-      </Formik>
-    </Segment>
+        <Message
+          onDismiss={onClick}
+          success
+          attached="bottom"
+          header="Success"
+          content="A new event has been created"
+        />
+      </Transition>
+      <Transition
+        animation="fade down"
+        visible={status === FormSubmitStatus.Error}
+      >
+        <Message
+          onDismiss={onClick}
+          error
+          attached="bottom"
+          header="Error"
+          content="Event could not be created. Please try again."
+        />
+      </Transition>
+    </Form>
   );
 };
 

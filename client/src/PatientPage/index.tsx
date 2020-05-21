@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Header, Loader, Icon, SemanticICONS, Label } from "semantic-ui-react";
+import {
+  Header,
+  Loader,
+  Icon,
+  SemanticICONS,
+  Label,
+  Tab,
+} from "semantic-ui-react";
 import axios from "axios";
 import { useAsyncCallback } from "react-async-hook";
 import { FormikHelpers } from "formik";
 import { useStateValue, updatePatient, addEntry } from "../state";
-import {
-  Patient,
-  Gender,
-  NewHospitalEntry,
-  NewHealthCheckEntry,
-  NewOccupationalHealthcareEntry,
-  Entry,
-} from "../types";
+import { Patient, Gender, NewEntry, Entry, FormSubmitStatus } from "../types";
 import EventList from "./EventList";
 import { sortByDate } from "../utils";
 import { apiBaseUrl } from "../constants";
-import AddEventForm from "../components/AddEventForm";
+import AddEventForm, { baseVals } from "../components/AddEventForm";
 
 const iconsByGender: Record<Gender, SemanticICONS> = {
   [Gender.Male]: "man",
@@ -29,8 +29,8 @@ const PatientPage: React.FC = () => {
   const [fullPatient, setFullPatient] = useState<boolean>(false);
   const { id: patientId } = useParams();
   const postEvent = async (
-    entry: NewHospitalEntry,
-    formikBag: FormikHelpers<NewHospitalEntry>
+    entry: Partial<NewEntry>,
+    formikBag: FormikHelpers<Partial<NewEntry>>
   ) => {
     formikBag.setStatus({});
     try {
@@ -39,15 +39,12 @@ const PatientPage: React.FC = () => {
         entry
       );
       formikBag.resetForm({
-        status: {
-          success: true,
-        },
+        status: FormSubmitStatus.Success,
+        values: baseVals,
       });
       return resp.data;
     } catch (err) {
-      formikBag.setStatus({
-        error: true,
-      });
+      formikBag.setStatus(FormSubmitStatus.Error);
       throw err;
     }
   };
@@ -77,6 +74,25 @@ const PatientPage: React.FC = () => {
   if (!fullPatient) {
     return <Loader active>Loading patient...</Loader>;
   }
+
+  const panes = [
+    {
+      menuItem: "History",
+      pane: {
+        key: "History",
+        content: (
+          <EventList entries={patient.entries?.sort(sortByDate) || []} />
+        ),
+      },
+    },
+    {
+      menuItem: "Add Event",
+      pane: {
+        key: "Add Event",
+        content: <AddEventForm onSubmit={asyncAddEvent.execute} />,
+      },
+    },
+  ];
   return (
     <div>
       <Header as="h1">
@@ -107,8 +123,7 @@ const PatientPage: React.FC = () => {
           </Header.Subheader>
         </Header.Content>
       </Header>
-      <EventList entries={patient.entries?.sort(sortByDate) || []} />
-      <AddEventForm onSubmit={asyncAddEvent.execute} />
+      <Tab panes={panes} renderActiveOnly={false} />
     </div>
   );
 };

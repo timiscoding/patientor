@@ -1,5 +1,5 @@
 import React from "react";
-import { mixed } from "yup";
+import { mixed, string } from "yup";
 import { Form, DropdownProps } from "semantic-ui-react";
 import { useField } from "formik";
 import {
@@ -9,7 +9,6 @@ import {
   EntryType,
 } from "../../../types";
 
-const fieldName = "healthCheckRating";
 const options = Object.keys(HealthCheckRating)
   .filter((key) => !isNaN(Number((HealthCheckRating as any)[key])))
   .map((key) => ({
@@ -17,14 +16,17 @@ const options = Object.keys(HealthCheckRating)
     value: (HealthCheckRating as any)[key],
   }));
 
-const HealthCheckEvent: Event<{}, NewHealthCheckEntry> = () => {
-  const [{ value }, meta, helpers] = useField(fieldName);
+const HealthCheckEvent: Event<
+  { className: string; style: React.CSSProperties },
+  NewHealthCheckEntry
+> = ({ className, style }) => {
+  const [{ value }, meta, helpers] = useField("healthCheckRating");
   const onChange = (e: React.SyntheticEvent<any>, data: DropdownProps) => {
     helpers.setTouched(true);
     helpers.setValue(data.value);
   };
   return (
-    <>
+    <div className={className} style={style}>
       <Form.Select
         options={options}
         label="Health Rating"
@@ -33,22 +35,24 @@ const HealthCheckEvent: Event<{}, NewHealthCheckEntry> = () => {
         value={value}
         error={meta.touched && meta.error}
       />
-    </>
+    </div>
   );
 };
 
 HealthCheckEvent.initialValues = {
-  [fieldName]: "",
+  healthCheckRating: "",
+  type: EntryType.HealthCheck,
 };
 
 HealthCheckEvent.validationSchema = {
-  [fieldName]: mixed()
+  healthCheckRating: mixed()
     .oneOf(
       Object.values(HealthCheckRating).filter((key) =>
         isNaN(Number((HealthCheckRating as any)[key]))
       )
     )
     .required("Required field"),
+  type: string().equals(Object.keys(EntryType)).required(),
 };
 
 HealthCheckEvent.type = EntryType.HealthCheck;

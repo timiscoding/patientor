@@ -13,3 +13,6 @@ export const sortByDate = (a: Entry, b: Entry) => {
   const bTime = new Date(b.date).getTime();
   return bTime - aTime;
 };
+
+export const getKeysFromEnum = (e: { [P: string]: any }) =>
+  Object.keys(e).filter((k) => !isNaN(Number((e as any)[k])));

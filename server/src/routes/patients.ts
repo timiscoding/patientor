@@ -26,11 +26,10 @@ router.post("/", (req, res) => {
   }
 });
 
-router.post("/:id/entries", async (req, res) => {
+router.post("/:id/entries", (req, res) => {
   try {
     const newEntry = toNewEntry(req.body);
     const addedEntry = patientService.addEntry(req.params.id, newEntry);
-    await sleep(5000);
     res.status(201).json(addedEntry);
   } catch (err) {
     res.status(400).send(err.message);

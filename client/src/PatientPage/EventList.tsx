@@ -49,32 +49,30 @@ const EventList: React.FC<{ entries: Entry[] }> = ({ entries }) => {
     setActiveIndex(newIndex);
   };
 
-  if (entries.length === 0) {
-    return (
-      <Segment placeholder>
-        <Header as="h2" icon>
-          <Icon name="doctor" />
-          No patient history has been recorded yet
-        </Header>
-      </Segment>
-    );
-  }
   return (
-    <Segment>
-      <Header as="h2">History</Header>
-      <Accordion styled fluid>
-        <AccordionContext.Provider
-          value={{
-            activeIndex,
-            handleClick,
-          }}
-        >
-          {entries.map((entry, i) => (
-            <EntryDetails entry={entry} index={i} key={entry.id} />
-          ))}
-        </AccordionContext.Provider>
-      </Accordion>
-    </Segment>
+    <div>
+      {entries.length > 0 ? (
+        <Accordion styled fluid>
+          <AccordionContext.Provider
+            value={{
+              activeIndex,
+              handleClick,
+            }}
+          >
+            {entries.map((entry, i) => (
+              <EntryDetails entry={entry} index={i} key={entry.id} />
+            ))}
+          </AccordionContext.Provider>
+        </Accordion>
+      ) : (
+        <Segment attached placeholder>
+          <Header as="h2" icon>
+            <Icon name="doctor" />
+            No patient history has been recorded yet
+          </Header>
+        </Segment>
+      )}
+    </div>
   );
 };
 

@@ -9,11 +9,11 @@ import {
 } from "../../../types";
 
 const OccupationalHealthcareEvent: Event<
-  {},
+  { style: React.CSSProperties; className: string },
   NewOccupationalHealthcareEntry
-> = () => {
+> = ({ style, className }) => {
   return (
-    <>
+    <div style={style} className={className}>
       <FormField name="employerName" label="Employer" required />
       <Segment>
         <Label attached="top left">
@@ -29,16 +29,18 @@ const OccupationalHealthcareEvent: Event<
           <FormField name="sickLeave.endDate" label="End date" type="date" />
         </Form.Group>
       </Segment>
-    </>
+    </div>
   );
 };
 
 OccupationalHealthcareEvent.initialValues = {
   employerName: "",
   sickLeave: { startDate: "", endDate: "" },
+  type: EntryType.OccupationalHealthcare,
 };
 
 OccupationalHealthcareEvent.validationSchema = {
+  type: string().equals(Object.keys(EntryType)).required(),
   employerName: string().required("Required field"),
   sickLeave: object()
     .shape({

@@ -76,24 +76,36 @@ export type Entry =
 
 type Modify<TOrig, TReplace> = Omit<TOrig, keyof TReplace> & TReplace;
 type ExcludedNewEntry = "id" | "date";
-export type NewHospitalEntry = Omit<HospitalEntry, ExcludedNewEntry>;
-export type NewOccupationalHealthcareEntry = Omit<
-  OccupationalHealthcareEntry,
-  ExcludedNewEntry
+export type NewHospitalEntry = Modify<
+  Omit<HospitalEntry, ExcludedNewEntry>,
+  { type: EntryType.Hospital | "" }
+>;
+export type NewOccupationalHealthcareEntry = Modify<
+  Omit<OccupationalHealthcareEntry, ExcludedNewEntry>,
+  { type: EntryType.OccupationalHealthcare | "" }
 >;
 // modify healthCheckRating to allow for initial value in forms
 export type NewHealthCheckEntry = Modify<
   Omit<HealthCheckEntry, ExcludedNewEntry>,
-  { healthCheckRating: HealthCheckRating | "" }
+  {
+    healthCheckRating: HealthCheckRating | "";
+    type: EntryType.HealthCheck | "";
+  }
 >;
 export type NewEntry =
   | NewHospitalEntry
   | NewOccupationalHealthcareEntry
   | NewHealthCheckEntry;
 
-type InitValKeys<T> = Omit<T, keyof BaseEntry | "type">;
+type InitValKeys<T> = Omit<T, keyof BaseEntry>;
 export type Event<P, T extends NewEntry> = React.FC<P> & {
   initialValues: { [P in keyof InitValKeys<T>]: InitValKeys<T>[P] };
-  validationSchema: { [P in keyof Omit<T, keyof Entry>]: Schema<any> };
+  validationSchema: { [P in keyof InitValKeys<T>]: Schema<any> };
   type: T["type"];
 };
+
+export enum FormSubmitStatus {
+  Success = "Success",
+  Error = "Error",
+  Inactive = "Inactive",
+}
