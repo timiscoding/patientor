@@ -15,7 +15,7 @@ import {
 } from "semantic-ui-react";
 
 import EventTypeForm from "./EventTypeForm";
-import { FormField, DiagnosisSelection } from "./FormField";
+import { FormField, DiagnosisSelection } from "../FormField";
 import { NewEntry, FormSubmitStatus } from "../../types";
 
 const AddEventForm: React.FC<{

@@ -36,7 +36,7 @@ const EventTypeForm: React.FC = () => {
       (r, key) => ({ ...r, [key]: (values as any)[key] }),
       {}
     );
-    setValues({ ...curBaseVals, type, ...event.initialValues }, false);
+    setValues({ ...curBaseVals, ...event.initialValues }, false);
   };
 
   const type = typeField.value as keyof typeof EntryType;

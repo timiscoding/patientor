@@ -17,9 +17,10 @@ export interface Patient {
   name: string;
   occupation: string;
   gender: Gender;
-  ssn?: string;
-  dateOfBirth?: string;
+  ssn: string;
+  dateOfBirth: string;
   entries?: Entry[];
+  recentHealthCheckRating?: HealthCheckRating;
 }
 
 export enum EntryType {
@@ -74,7 +75,7 @@ export type Entry =
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
 
-type Modify<TOrig, TReplace> = Omit<TOrig, keyof TReplace> & TReplace;
+export type Modify<TOrig, TReplace> = Omit<TOrig, keyof TReplace> & TReplace;
 type ExcludedNewEntry = "id" | "date";
 export type NewHospitalEntry = Modify<
   Omit<HospitalEntry, ExcludedNewEntry>,
@@ -109,3 +110,20 @@ export enum FormSubmitStatus {
   Error = "Error",
   Inactive = "Inactive",
 }
+
+export interface Page<TItem> {
+  itemCount: number;
+  itemsPerPage: number;
+  items: Array<TItem>;
+}
+
+export type PatientEntriesPage = Modify<
+  Patient,
+  {
+    entries: {
+      items: Patient["entries"];
+      itemCount: number;
+      itemsPerPage: number;
+    };
+  }
+>;

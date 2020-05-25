@@ -234,3 +234,11 @@ export const sleep = async (ms: number, error?: string): Promise<undefined> => {
     }, ms);
   });
 };
+
+export const toNum = (param: any) => {
+  const res = Number(param);
+  if (isNaN(res)) {
+    throw new Error("Param must be a number");
+  }
+  return res;
+};

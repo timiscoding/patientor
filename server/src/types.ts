@@ -70,6 +70,7 @@ export interface Patient {
   gender: Gender;
   dateOfBirth: string;
   entries: Entry[];
+  recentHealthCheckRating?: HealthCheckRating;
 }
 
 export type PublicPatient = Omit<Patient, "ssn" | "entries">;
@@ -91,3 +92,21 @@ export type NewEntry =
   | NewHealthCheckEntry;
 
 export type DiagnosisCode = Diagnose["code"];
+
+export interface Page<TItem> {
+  itemCount: number;
+  itemsPerPage: number;
+  items: Array<TItem>;
+}
+
+export type Modify<TOrig, TReplace> = Omit<TOrig, keyof TReplace> & TReplace;
+export type PatientPage = Modify<
+  Patient,
+  {
+    entries: {
+      items: Patient["entries"];
+      itemCount: number;
+      itemsPerPage: number;
+    };
+  }
+>;

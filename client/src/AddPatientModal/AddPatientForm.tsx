@@ -1,15 +1,19 @@
 import React from "react";
 import { Grid, Button } from "semantic-ui-react";
-import { Field, Formik, Form } from "formik";
+import { Formik, Form } from "formik";
+import { object, string, mixed, date } from "yup";
 
-import { TextField, SelectField, GenderOption } from "./FormField";
-import { Gender, Patient } from "../types";
+import { FormField, SelectField, GenderOption } from "../components";
+import { Gender, Patient, Modify } from "../types";
 
 /*
  * use type Patient, but omit id and entries,
  * because those are irrelevant for new patient object.
  */
-export type PatientFormValues = Omit<Patient, "id" | "entries">;
+export type PatientFormValues = Modify<
+  Omit<Patient, "id" | "entries">,
+  { gender: Gender | "" }
+>;
 
 interface Props {
   onSubmit: (values: PatientFormValues) => void;
@@ -17,11 +21,12 @@ interface Props {
 }
 
 const genderOptions: GenderOption[] = [
-  { value: Gender.Male, label: "Male" },
-  { value: Gender.Female, label: "Female" },
-  { value: Gender.Other, label: "Other" },
+  { value: Gender.Male, text: "Male" },
+  { value: Gender.Female, text: "Female" },
+  { value: Gender.Other, text: "Other" },
 ];
 
+const requiredError = "Field is required";
 export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
   return (
     <Formik
@@ -30,58 +35,50 @@ export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         ssn: "",
         dateOfBirth: "",
         occupation: "",
-        gender: Gender.Other,
+        gender: "",
       }}
       onSubmit={onSubmit}
-      validate={(values) => {
-        const requiredError = "Field is required";
-        const errors: { [field: string]: string } = {};
-        if (!values.name) {
-          errors.name = requiredError;
-        }
-        if (!values.ssn) {
-          errors.ssn = requiredError;
-        }
-        if (!values.dateOfBirth) {
-          errors.dateOfBirth = requiredError;
-        }
-        if (!values.occupation) {
-          errors.occupation = requiredError;
-        }
-        return errors;
-      }}
+      validationSchema={object().shape({
+        name: string().required(requiredError),
+        ssn: string().required(requiredError),
+        dateOfBirth: date().required(requiredError),
+        occupation: string().required(requiredError),
+        gender: mixed().oneOf(Object.values(Gender)).required(requiredError),
+      })}
     >
       {({ isValid, dirty }) => {
         return (
           <Form className="form ui">
-            <Field
-              label="Name"
-              placeholder="Name"
-              name="name"
-              component={TextField}
-            />
-            <Field
+            <FormField label="Name" placeholder="Name" name="name" required />
+            <FormField
               label="Social Security Number"
               placeholder="SSN"
               name="ssn"
-              component={TextField}
+              required
             />
-            <Field
+            <FormField
               label="Date Of Birth"
               placeholder="YYYY-MM-DD"
               name="dateOfBirth"
-              component={TextField}
+              type="date"
+              required
             />
-            <Field
+            <FormField
               label="Occupation"
               placeholder="Occupation"
               name="occupation"
-              component={TextField}
+              required
             />
-            <SelectField label="Gender" name="gender" options={genderOptions} />
+            <SelectField
+              label="Gender"
+              placeholder="Select gender"
+              name="gender"
+              options={genderOptions}
+              required
+            />
             <Grid>
               <Grid.Column floated="left" width={5}>
-                <Button type="button" onClick={onCancel} color="red">
+                <Button type="button" onClick={onCancel} secondary>
                   Cancel
                 </Button>
               </Grid.Column>
@@ -89,7 +86,7 @@ export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
                 <Button
                   type="submit"
                   floated="right"
-                  color="green"
+                  primary
                   disabled={!dirty || !isValid}
                 >
                   Add

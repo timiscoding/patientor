@@ -1,88 +1,100 @@
 import React, { useEffect } from "react";
-import { ErrorMessage, Field, FieldProps, useField } from "formik";
-import { Dropdown, DropdownProps, Form, Icon } from "semantic-ui-react";
+import { useField } from "formik";
+import {
+  FormFieldProps,
+  Input,
+  Dropdown,
+  DropdownProps,
+  Form,
+  Icon,
+} from "semantic-ui-react";
 import axios from "axios";
 import { useAsyncCallback } from "react-async-hook";
 import { Diagnosis, Gender } from "../types";
 import { useStateValue, setDiagnosisList } from "../state";
 import { apiBaseUrl } from "../constants";
 
+const FormField: React.FC<{
+  label: string;
+  name: string;
+  type?: FormFieldProps["type"];
+  width?: FormFieldProps["width"];
+  [x: string]: any;
+}> = ({ label, name, type, width, ...props }) => {
+  const [field, meta] = useField(name);
+  return (
+    <Form.Field
+      width={width}
+      label={label}
+      type={type}
+      error={
+        meta.touched && meta.error && { content: meta.error, pointing: "above" }
+      }
+      control={Input}
+      {...field}
+      {...props}
+    />
+  );
+};
+
 // structure of a single option
 export type GenderOption = {
   value: Gender;
-  label: string;
+  text: string;
 };
 
-// props for select field component
-type SelectFieldProps = {
+// // props for select field component
+// type SelectFieldProps = {
+//   name: string;
+//   label: string;
+//   options: GenderOption[];
+// };
+
+const SelectField: React.FC<{
   name: string;
   label: string;
-  options: GenderOption[];
+  options: Array<{ value: string; text: string }>;
+  required?: boolean;
+  placeholder?: string;
+}> = ({ name, label, options, required, placeholder }) => {
+  const [{ value }, meta, helpers] = useField(name);
+  const onChange = (e: React.SyntheticEvent, data: DropdownProps) => {
+    helpers.setTouched(true);
+    helpers.setValue(data.value);
+  };
+  return (
+    <Form.Select
+      options={options}
+      label={label}
+      onChange={onChange}
+      value={value}
+      error={meta.touched && meta.error}
+      required={required}
+      placeholder={placeholder}
+    />
+  );
 };
 
-export const SelectField: React.FC<SelectFieldProps> = ({
-  name,
-  label,
-  options,
-}: SelectFieldProps) => (
-  <Form.Field>
-    <label>{label}</label>
-    <Field as="select" name={name} className="ui dropdown">
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label || option.value}
-        </option>
-      ))}
-    </Field>
-  </Form.Field>
-);
+// interface TextProps extends FieldProps {
+//   label: string;
+//   placeholder: string;
+// }
 
-interface TextProps extends FieldProps {
-  label: string;
-  placeholder: string;
-}
+// export const TextField: React.FC<TextProps> = ({
+//   field,
+//   label,
+//   placeholder,
+// }) => (
+//   <Form.Field>
+//     <label>{label}</label>
+//     <Field placeholder={placeholder} {...field} />
+//     <div style={{ color: "red" }}>
+//       <ErrorMessage name={field.name} />
+//     </div>
+//   </Form.Field>
+// );
 
-export const TextField: React.FC<TextProps> = ({
-  field,
-  label,
-  placeholder,
-}) => (
-  <Form.Field>
-    <label>{label}</label>
-    <Field placeholder={placeholder} {...field} />
-    <div style={{ color: "red" }}>
-      <ErrorMessage name={field.name} />
-    </div>
-  </Form.Field>
-);
-
-/*
-  for exercises 9.24.-
-*/
-interface NumberProps extends FieldProps {
-  label: string;
-  errorMessage?: string;
-  min: number;
-  max: number;
-}
-
-export const NumberField: React.FC<NumberProps> = ({
-  field,
-  label,
-  min,
-  max,
-}) => (
-  <Form.Field>
-    <label>{label}</label>
-    <Field {...field} type="number" min={min} max={max} />
-
-    <div style={{ color: "red" }}>
-      <ErrorMessage name={field.name} />
-    </div>
-  </Form.Field>
-);
-
-export const DiagnosisSelection: React.FC<{
+const DiagnosisSelection: React.FC<{
   name: string;
   readOnly?: boolean;
 }> = ({ name, readOnly = false }) => {
@@ -151,3 +163,5 @@ export const DiagnosisSelection: React.FC<{
     </Form.Field>
   );
 };
+
+export { FormField, DiagnosisSelection, SelectField };

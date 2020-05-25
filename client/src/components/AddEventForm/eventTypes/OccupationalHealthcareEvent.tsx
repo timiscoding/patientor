@@ -1,7 +1,7 @@
 import React from "react";
 import { string, object, ValidationError } from "yup";
 import { Form, Label, Segment, Icon } from "semantic-ui-react";
-import { FormField } from "../FormField";
+import { FormField } from "../../FormField";
 import {
   NewOccupationalHealthcareEntry,
   Event,

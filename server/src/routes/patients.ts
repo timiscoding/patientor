@@ -1,35 +1,44 @@
 import express from "express";
 import { patientService } from "../service";
-import { toNewPatient, toNewEntry, sleep } from "../utils";
+import { toNewPatient, toNewEntry, toNum } from "../utils";
 
 const router = express.Router();
 
-router.get("/:id", (req, res) => {
-  const patient = patientService.getPatient(req.params.id);
-  if (!patient) {
-    return res.status(404);
+router.get("/:id", async (req, res, next) => {
+  try {
+    const { ep } = req.query;
+    const page = ep ? toNum(ep) : 1;
+    const patient = await patientService.getPatient(req.params.id, page);
+    return res.json(patient);
+  } catch (err) {
+    next(err);
   }
-  return res.json(patient);
 });
 
-router.get("/", (_req, res) => {
-  res.send(patientService.getPatients());
+router.get("/", async (req, res, next) => {
+  try {
+    const { pp } = req.query;
+    const page = pp ? toNum(pp) : 1;
+    res.send(await patientService.getPatients(page));
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const newPatient = toNewPatient(req.body);
-    const addedPatient = patientService.addPatient(newPatient);
+    const addedPatient = await patientService.addPatient(newPatient);
     res.send(addedPatient);
   } catch (e) {
     res.status(400).send(e.message);
   }
 });
 
-router.post("/:id/entries", (req, res) => {
+router.post("/:id/entries", async (req, res) => {
   try {
     const newEntry = toNewEntry(req.body);
-    const addedEntry = patientService.addEntry(req.params.id, newEntry);
+    const addedEntry = await patientService.addEntry(req.params.id, newEntry);
     res.status(201).json(addedEntry);
   } catch (err) {
     res.status(400).send(err.message);

@@ -3,7 +3,7 @@ import { Form, Segment, Label, Icon } from "semantic-ui-react";
 import { useFormikContext } from "formik";
 import { object, string, date } from "yup";
 
-import { FormField } from "../FormField";
+import { FormField } from "../../FormField";
 import { NewHospitalEntry, Event, EntryType } from "../../../types";
 
 const HospitalEvent: Event<

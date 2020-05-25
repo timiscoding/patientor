@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/lodash": "4.14.152",
     "axios": "^0.19.0",
     "formik": "^2.0.6",
+    "lodash": "4.17.15",
     "react": "^16.11.0",
+    "react-animate-height": "2.0.21",
     "react-async-hook": "3.6.1",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
-    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-css": "2.4.1",
     "semantic-ui-react": "^0.88.1",
     "yup": "0.28.3"
   },

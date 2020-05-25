@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Entry, EntryType } from "../types";
 import {
   Header,
@@ -6,13 +6,18 @@ import {
   Icon,
   AccordionTitleProps,
   Accordion,
+  PaginationProps,
+  Divider,
 } from "semantic-ui-react";
+import { useLocation, useHistory } from "react-router-dom";
+import { useStateValue } from "../state";
 import { assertNever } from "../utils";
 import {
   OccupationalHealthcareEvent,
   HealthCheckEvent,
   HospitalEvent,
-} from "../components/Event";
+  Pager,
+} from "../components";
 
 const EntryDetails: React.FC<{ entry: Entry; index: number }> = ({
   entry,
@@ -33,13 +38,19 @@ const EntryDetails: React.FC<{ entry: Entry; index: number }> = ({
 export const AccordionContext = React.createContext({
   activeIndex: 0,
   handleClick: (
-    e: React.MouseEvent,
-    titleProps: AccordionTitleProps
+    _e: React.MouseEvent,
+    _titleProps: AccordionTitleProps
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ): void => {},
 });
 
 const EventList: React.FC<{ entries: Entry[] }> = ({ entries }) => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const { search } = useLocation();
+  const history = useHistory();
+  const [{ itemCount, itemsPerPage }] = useStateValue();
+  const query = useMemo(() => new URLSearchParams(search), [search]);
+
   const handleClick = (
     e: React.MouseEvent,
     titleProps: AccordionTitleProps
@@ -49,29 +60,45 @@ const EventList: React.FC<{ entries: Entry[] }> = ({ entries }) => {
     setActiveIndex(newIndex);
   };
 
+  const onPageChange = (
+    e: React.SyntheticEvent<HTMLAnchorElement, MouseEvent>,
+    data: PaginationProps
+  ) => {
+    history.push(`?ep=${data.activePage}`);
+  };
+  if (entries.length === 0) {
+    return (
+      <Segment attached placeholder>
+        <Header as="h2" icon>
+          <Icon name="doctor" />
+          No patient history has been recorded yet
+        </Header>
+      </Segment>
+    );
+  }
+
   return (
     <div>
-      {entries.length > 0 ? (
-        <Accordion styled fluid>
-          <AccordionContext.Provider
-            value={{
-              activeIndex,
-              handleClick,
-            }}
-          >
-            {entries.map((entry, i) => (
-              <EntryDetails entry={entry} index={i} key={entry.id} />
-            ))}
-          </AccordionContext.Provider>
-        </Accordion>
-      ) : (
-        <Segment attached placeholder>
-          <Header as="h2" icon>
-            <Icon name="doctor" />
-            No patient history has been recorded yet
-          </Header>
-        </Segment>
-      )}
+      <Accordion styled fluid>
+        <AccordionContext.Provider
+          value={{
+            activeIndex,
+            handleClick,
+          }}
+        >
+          {entries.map((entry, i) => (
+            <EntryDetails entry={entry} index={i} key={entry.id} />
+          ))}
+        </AccordionContext.Provider>
+      </Accordion>
+      <Divider hidden />
+      <Segment textAlign="center" basic>
+        <Pager
+          onPageChange={onPageChange}
+          activePage={Number(query.get("ep")) || 1}
+          totalPages={Math.ceil(itemCount / itemsPerPage) || ""}
+        />
+      </Segment>
     </div>
   );
 };

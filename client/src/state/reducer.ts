@@ -1,17 +1,12 @@
 import { State } from "./state";
-import { Patient, Diagnosis, Entry } from "../types";
+import { Patient, Diagnosis, Entry, Page, PatientEntriesPage } from "../types";
 
-export const setPatientList = (patientListFromApi: Patient[]): Action => ({
+export const setPatientList = (patientPage: Page<Patient>): Action => ({
   type: "SET_PATIENT_LIST",
-  payload: patientListFromApi,
+  payload: patientPage,
 });
 
-export const addPatient = (patient: Patient): Action => ({
-  type: "ADD_PATIENT",
-  payload: patient,
-});
-
-export const updatePatient = (patient: Patient): Action => ({
+export const updatePatient = (patient: PatientEntriesPage): Action => ({
   type: "UPDATE_PATIENT",
   payload: patient,
 });
@@ -34,15 +29,11 @@ export const setDiagnosisList = (
 export type Action =
   | {
       type: "SET_PATIENT_LIST";
-      payload: Patient[];
-    }
-  | {
-      type: "ADD_PATIENT";
-      payload: Patient;
+      payload: Page<Patient>;
     }
   | {
       type: "UPDATE_PATIENT";
-      payload: Patient;
+      payload: PatientEntriesPage;
     }
   | {
       type: "SET_DIAGNOSIS_LIST";
@@ -56,7 +47,7 @@ export type Action =
       };
     };
 
-const assertNever = (arg: never): never => {
+const assertNever = (_arg: never): never => {
   throw new Error("Assert never");
 };
 
@@ -66,32 +57,30 @@ export const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         patients: {
-          ...action.payload.reduce(
+          ...action.payload.items.reduceRight(
             (memo, patient) => ({ ...memo, [patient.id]: patient }),
             {}
           ),
-          ...state.patients,
         },
+        itemCount: action.payload.itemCount,
+        itemsPerPage: action.payload.itemsPerPage,
       };
-    case "ADD_PATIENT":
-      return {
-        ...state,
-        patients: {
-          ...state.patients,
-          [action.payload.id]: action.payload,
-        },
-      };
-    case "UPDATE_PATIENT":
+    case "UPDATE_PATIENT": {
+      const { entries, ...patient } = action.payload;
       return {
         ...state,
         patients: {
           ...state.patients,
           [action.payload.id]: {
             ...state.patients[action.payload.id],
-            ...action.payload,
+            ...patient,
+            entries: entries.items,
           },
         },
+        itemsPerPage: entries.itemsPerPage,
+        itemCount: entries.itemCount,
       };
+    }
     case "SET_DIAGNOSIS_LIST":
       return {
         ...state,
