@@ -16,26 +16,21 @@ const options = Object.keys(HealthCheckRating)
     value: (HealthCheckRating as any)[key],
   }));
 
-const HealthCheckEvent: Event<
-  { className: string; style: React.CSSProperties },
-  NewHealthCheckEntry
-> = ({ className, style }) => {
+const HealthCheckEvent: Event<{}, NewHealthCheckEntry> = () => {
   const [{ value }, meta, helpers] = useField("healthCheckRating");
   const onChange = (e: React.SyntheticEvent<any>, data: DropdownProps) => {
     helpers.setTouched(true);
     helpers.setValue(data.value);
   };
   return (
-    <div className={className} style={style}>
-      <Form.Select
-        options={options}
-        label="Health Rating"
-        required
-        onChange={onChange}
-        value={value}
-        error={meta.touched && meta.error}
-      />
-    </div>
+    <Form.Select
+      options={options}
+      label="Health Rating"
+      required
+      onChange={onChange}
+      value={value}
+      error={meta.touched && meta.error}
+    />
   );
 };
 

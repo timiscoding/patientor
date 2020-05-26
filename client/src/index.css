@@ -1,0 +1,21 @@
+.page-content {
+  margin-top: 5em;
+}
+
+/* fix shorter height for empty date inputs in iOS */
+input[type="date"] {
+  height: 2.375rem;
+}
+
+.base-event__accordion-title {
+  background-color: #ececec !important;
+}
+
+.word-break {
+  word-break: break-all;
+}
+
+.patient-list__add-patient-btn-wrapper {
+  position: absolute;
+  top: -30px;
+}

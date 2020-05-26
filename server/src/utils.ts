@@ -13,6 +13,7 @@ import {
   NewOccupationalHealthcareEntry,
   SickLeave,
 } from "./types";
+import { maxInputLengths } from "./constants";
 
 export const assertNever = (_any: never): never => {
   throw new Error("Exhaustive type checking violated");
@@ -30,9 +31,22 @@ const isDateStr = (text: any): boolean => {
   return isString(text) && !isNaN(Date.parse(text));
 };
 
-const parseString = (name: string, param: any): string => {
+const max = (name: string, textOrArray: string | Array<any>, len: number) => {
+  if (textOrArray.length > len) {
+    throw new Error(
+      `Field ${name} must be ${len} ${
+        typeof textOrArray === "string" ? "characters" : "items"
+      } or less`
+    );
+  }
+};
+
+const parseString = (name: string, param: any, maxLen?: number): string => {
   if (!param || !isString(param)) {
     throw new Error(errorStr(name, param));
+  }
+  if (typeof maxLen === "number") {
+    max(name, param, maxLen);
   }
   return param;
 };
@@ -41,6 +55,7 @@ const parseName = (name: any): string => {
   if (!name || !isString(name)) {
     throw new Error(errorStr("name", name));
   }
+  max("name", name, maxInputLengths.patient.name);
   return name;
 };
 
@@ -59,6 +74,7 @@ const parseSSN = (ssn: any): string => {
   if (!ssn || !isString(ssn)) {
     throw new Error(errorStr("ssn", ssn));
   }
+  max("ssn", ssn, maxInputLengths.patient.ssn);
   return ssn;
 };
 
@@ -77,6 +93,7 @@ const parseOccupation = (occupation: any): string => {
   if (!occupation || !isString(occupation)) {
     throw new Error(errorStr("occupation", occupation));
   }
+  max("occupation", occupation, maxInputLengths.patient.occupation);
   return occupation;
 };
 
@@ -109,6 +126,7 @@ const parseDiagnosisCodes = (codes: any): DiagnosisCode[] | undefined => {
   if (codes && (!Array.isArray(codes) || !codes.every(isString))) {
     throw new Error("diagnosisCodes must be array of strings");
   }
+  max("diagnosisCodes", codes, maxInputLengths.event.diagnosisCodes);
   return codes;
 };
 
@@ -145,6 +163,11 @@ const parseHospital = (
   if (!params.discharge || !isDischarge(params.discharge)) {
     throw new Error("Hospital entry missing or incorrect discharge field");
   }
+  max(
+    "discharge.criteria",
+    params.discharge.criteria,
+    maxInputLengths.event.hospital.discharge.criteria
+  );
   return {
     discharge: params.discharge,
   };
@@ -174,6 +197,11 @@ const parseOccupationalHealthcare = (
       "OccupationalHealthcare entry missing or incorrect employerName field"
     );
   }
+  max(
+    "employerName",
+    params.employerName,
+    maxInputLengths.event.occupationalHealthcare.employerName
+  );
   if (isSickLeaveEmpty(params.sickLeave)) {
     return partial;
   }
@@ -182,6 +210,16 @@ const parseOccupationalHealthcare = (
       "OccupationalHealthcare entry missing or incorrect sickLeave fields"
     );
   }
+  max(
+    "sickLeave.startDate",
+    params.sickLeave.startDate,
+    maxInputLengths.event.occupationalHealthcare.sickLeave.startDate
+  );
+  max(
+    "sickLeave.endDate",
+    params.sickLeave.endDate,
+    maxInputLengths.event.occupationalHealthcare.sickLeave.endDate
+  );
   return { ...partial, sickLeave: params.sickLeave };
 };
 
@@ -195,8 +233,16 @@ export const toNewEntry = (object: any): NewEntry => {
   } = object;
   let newEntry = {
     type: parseType(type),
-    description: parseString("description", description),
-    specialist: parseString("specialist", specialist),
+    description: parseString(
+      "description",
+      description,
+      maxInputLengths.event.description
+    ),
+    specialist: parseString(
+      "specialist",
+      specialist,
+      maxInputLengths.event.specialist
+    ),
     diagnosisCodes: parseDiagnosisCodes(diagnosisCodes),
   } as NewEntry;
 

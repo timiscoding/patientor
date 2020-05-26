@@ -5,6 +5,7 @@ import { object, string, mixed, date } from "yup";
 
 import { FormField, SelectField, GenderOption } from "../components";
 import { Gender, Patient, Modify } from "../types";
+import { maxInputLengths } from "../constants";
 
 /*
  * use type Patient, but omit id and entries,
@@ -39,10 +40,14 @@ export const AddPatientForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
       }}
       onSubmit={onSubmit}
       validationSchema={object().shape({
-        name: string().required(requiredError),
-        ssn: string().required(requiredError),
+        name: string()
+          .required(requiredError)
+          .max(maxInputLengths.patient.name),
+        ssn: string().required(requiredError).max(maxInputLengths.patient.ssn),
         dateOfBirth: date().required(requiredError),
-        occupation: string().required(requiredError),
+        occupation: string()
+          .required(requiredError)
+          .max(maxInputLengths.patient.occupation),
         gender: mixed().oneOf(Object.values(Gender)).required(requiredError),
       })}
     >

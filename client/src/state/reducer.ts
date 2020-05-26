@@ -57,7 +57,7 @@ export const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         patients: {
-          ...action.payload.items.reduceRight(
+          ...action.payload.items.reduce(
             (memo, patient) => ({ ...memo, [patient.id]: patient }),
             {}
           ),

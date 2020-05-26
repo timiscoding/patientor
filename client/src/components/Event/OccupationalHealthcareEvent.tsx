@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Icon, Label } from "semantic-ui-react";
+import { Table, Breadcrumb } from "semantic-ui-react";
 import { OccupationalHealthcareEntry } from "../../types";
 import BaseEvent from "./BaseEvent";
 
@@ -13,17 +13,17 @@ const OccupationalHealthcareEvent: React.FC<Props> = ({ entry, index }) => {
     <BaseEvent entry={entry} index={index}>
       <Table.Row>
         <Table.Cell>Employer</Table.Cell>
-        <Table.Cell>{entry.employerName}</Table.Cell>
+        <Table.Cell className="word-break">{entry.employerName}</Table.Cell>
       </Table.Row>
       <Table.Row>
         <Table.Cell>Sick Leave</Table.Cell>
         <Table.Cell>
           {entry.sickLeave ? (
-            <>
-              <Label>{entry.sickLeave.startDate}</Label>
-              <Icon name="arrow right" />
-              <Label>{entry.sickLeave.endDate}</Label>
-            </>
+            <Breadcrumb size="small">
+              <Breadcrumb.Section content={entry.sickLeave.startDate} />
+              <Breadcrumb.Divider icon="right chevron" />
+              <Breadcrumb.Section content={entry.sickLeave.endDate} />
+            </Breadcrumb>
           ) : (
             "None"
           )}

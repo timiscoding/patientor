@@ -5,39 +5,35 @@ import { object, string, date } from "yup";
 
 import { FormField } from "../../FormField";
 import { NewHospitalEntry, Event, EntryType } from "../../../types";
+import { maxInputLengths } from "../../../constants";
 
-const HospitalEvent: Event<
-  { className: string; style: React.CSSProperties },
-  NewHospitalEntry
-> = ({ style, className }) => {
+const HospitalEvent: Event<{}, NewHospitalEntry> = () => {
   const { isSubmitting } = useFormikContext();
 
   return (
-    <div style={style} className={className}>
-      <Segment>
-        <Label attached="top left">
-          <Icon name="sign out" />
-          Discharge
-        </Label>
-        <Form.Group>
-          <FormField
-            label="Date"
-            name="discharge.date"
-            type="date"
-            width={3}
-            readOnly={isSubmitting}
-            required
-          />
-          <FormField
-            label="Criteria"
-            name="discharge.criteria"
-            width={13}
-            readOnly={isSubmitting}
-            required
-          />
-        </Form.Group>
-      </Segment>
-    </div>
+    <Segment>
+      <Label attached="top left">
+        <Icon name="sign out" />
+        Discharge
+      </Label>
+      <Form.Group>
+        <FormField
+          label="Date"
+          name="discharge.date"
+          type="date"
+          width={3}
+          readOnly={isSubmitting}
+          required
+        />
+        <FormField
+          label="Criteria"
+          name="discharge.criteria"
+          width={13}
+          readOnly={isSubmitting}
+          required
+        />
+      </Form.Group>
+    </Segment>
   );
 };
 
@@ -52,7 +48,9 @@ HospitalEvent.initialValues = {
 HospitalEvent.validationSchema = {
   discharge: object().shape({
     date: date().required("Required field"),
-    criteria: string().required("Required field"),
+    criteria: string()
+      .required("Required field")
+      .max(maxInputLengths.event.hospital.discharge.criteria),
   }),
   type: string().equals(Object.keys(EntryType)).required(),
 };

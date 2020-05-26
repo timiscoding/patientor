@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import axios from "axios";
 import {
   Header,
@@ -10,10 +10,12 @@ import {
   Responsive,
   Sticky,
   Ref,
-  Rail,
   GridColumn,
+  Placeholder,
+  Loader,
 } from "semantic-ui-react";
 import { Link, useLocation, useHistory } from "react-router-dom";
+import { startCase, words, upperFirst } from "lodash";
 
 import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
 import AddPatientModal from "../AddPatientModal";
@@ -25,8 +27,9 @@ import { useStateValue, setPatientList } from "../state";
 const PatientListPage: React.FC = () => {
   const [{ patients, itemCount, itemsPerPage }, dispatch] = useStateValue();
 
-  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | undefined>();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>();
+  const [loading, setLoading] = useState<boolean>(true);
   const location = useLocation<{ forceRefresh: boolean }>();
   const history = useHistory();
   const tableRef = useRef();
@@ -44,6 +47,7 @@ const PatientListPage: React.FC = () => {
           `${apiBaseUrl}/patients?pp=${page}`
         );
         dispatch(setPatientList(patientListFromApi));
+        setLoading(false);
       } catch (e) {
         console.error(e);
       }
@@ -83,11 +87,16 @@ const PatientListPage: React.FC = () => {
 
       <Ref innerRef={tableRef}>
         <GridColumn>
+          <Loader active={loading}>Loading</Loader>
           <Responsive maxWidth={Responsive.onlyMobile.maxWidth}>
-            <Rail position="right" internal>
-              <Sticky context={tableRef} offset={95}>
+            <div className="patient-list__add-patient-btn-wrapper">
+              <Sticky
+                context={tableRef}
+                offset={95}
+                styleElement={{ width: "auto", right: 20 }}
+              >
                 <Button
-                  floated="right"
+                  disabled={loading}
                   circular
                   size="big"
                   primary
@@ -95,29 +104,61 @@ const PatientListPage: React.FC = () => {
                   onClick={() => openModal()}
                 ></Button>
               </Sticky>
-            </Rail>
+            </div>
           </Responsive>
-
-          <Table celled striped selectable compact attached="top">
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Name</Table.HeaderCell>
-                <Table.HeaderCell collapsing>Gender</Table.HeaderCell>
-                <Table.HeaderCell>Occupation</Table.HeaderCell>
-                <Table.HeaderCell collapsing>Health Rating</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {Object.values(patients)
-                .reverse()
-                .map((patient: Patient) => (
+          {loading ? (
+            <Table celled striped compact attached="top">
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell>Name</Table.HeaderCell>
+                  <Table.HeaderCell collapsing>Gender</Table.HeaderCell>
+                  <Table.HeaderCell>Occupation</Table.HeaderCell>
+                  <Table.HeaderCell collapsing>Health Rating</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {Array(10)
+                  .fill(null)
+                  .map((_, i) => (
+                    <Table.Row key={i}>
+                      {Array(4)
+                        .fill(null)
+                        .map((_, j) => (
+                          <Table.Cell key={j}>
+                            <Placeholder>
+                              <Placeholder.Line />
+                            </Placeholder>
+                          </Table.Cell>
+                        ))}
+                    </Table.Row>
+                  ))}
+              </Table.Body>
+            </Table>
+          ) : (
+            <Table celled striped compact attached="top">
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell>Name</Table.HeaderCell>
+                  <Table.HeaderCell collapsing>Gender</Table.HeaderCell>
+                  <Table.HeaderCell>Occupation</Table.HeaderCell>
+                  <Table.HeaderCell collapsing>Health Rating</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {Object.values(patients).map((patient: Patient) => (
                   <Table.Row key={patient.id}>
                     <Table.Cell>
-                      <Link to={`/patients/${patient.id}`}>{patient.name}</Link>
+                      <Link
+                        to={`/patients/${patient.id}`}
+                        className="word-break"
+                      >
+                        {words(patient.name, /\w+/g).map(upperFirst).join(" ")}
+                      </Link>
                     </Table.Cell>
-                    <Table.Cell>{patient.gender}</Table.Cell>
-                    <Table.Cell>{patient.occupation}</Table.Cell>
+                    <Table.Cell>{startCase(patient.gender)}</Table.Cell>
+                    <Table.Cell className="word-break">
+                      {startCase(patient.occupation)}
+                    </Table.Cell>
                     <Table.Cell>
                       {Number.isInteger(
                         patient.recentHealthCheckRating as number
@@ -126,26 +167,33 @@ const PatientListPage: React.FC = () => {
                           rating={patient.recentHealthCheckRating as number}
                         />
                       ) : (
-                        "Not available"
+                        "Not Available"
                       )}
                     </Table.Cell>
                   </Table.Row>
                 ))}
-            </Table.Body>
-          </Table>
-
+              </Table.Body>
+            </Table>
+          )}
           <Responsive minWidth={Responsive.onlyMobile.maxWidth}>
             <Segment clearing attached="bottom">
               <Button
-                floated="right"
-                icon
                 primary
-                labelPosition="left"
                 size="small"
+                animated="vertical"
+                floated="right"
                 onClick={() => openModal()}
+                disabled={loading}
               >
-                <Icon name="user plus" />
-                New Patient
+                <Button.Content visible>
+                  <Icon name="user plus" />
+                  New Patient
+                </Button.Content>
+                <Button.Content hidden>
+                  <Icon name="dollar" color="yellow" fitted />
+                  <Icon name="dollar" color="yellow" fitted />
+                  <Icon name="dollar" color="yellow" fitted />
+                </Button.Content>
               </Button>
             </Segment>
           </Responsive>
@@ -162,6 +210,7 @@ const PatientListPage: React.FC = () => {
           onPageChange={onPageChange}
           activePage={Number(query.get("pp")) || 1}
           totalPages={Math.ceil(itemCount / itemsPerPage) || ""}
+          disabled={loading}
         />
       </Segment>
     </div>
@@ -169,10 +218,3 @@ const PatientListPage: React.FC = () => {
 };
 
 export default PatientListPage;
-
-//TODO sticky add patient button
-// TODO make backend work on mobile. baseApiUrl prob needs to be relative
-// TODO fix wide entries in mobile
-// TODO fix date field height style before edit
-// TODO make patient header text smaller on mobile
-// TODO limit max characters for input fields

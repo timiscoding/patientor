@@ -1,8 +1,9 @@
 import React from "react";
-import { Rating, Popup } from "semantic-ui-react";
+import { Rating, Popup, RatingProps } from "semantic-ui-react";
 
 type BarProps = {
   rating: number;
+  size?: RatingProps["size"];
 };
 
 const HEALTHBAR_TEXTS = [
@@ -14,17 +15,21 @@ const HEALTHBAR_TEXTS = [
 
 const HealthRatingBar = ({ rating }: BarProps) => {
   return (
-    <div className="health-bar">
-      <Popup
-        content={HEALTHBAR_TEXTS[rating]}
-        size="mini"
-        inverted
-        basic
-        trigger={
-          <Rating icon="heart" disabled rating={4 - rating} maxRating={4} />
-        }
-      />
-    </div>
+    <Popup
+      content={HEALTHBAR_TEXTS[rating]}
+      size="mini"
+      inverted
+      basic
+      trigger={
+        <Rating
+          icon="heart"
+          size="mini"
+          disabled
+          rating={4 - rating}
+          maxRating={4}
+        />
+      }
+    />
   );
 };
 

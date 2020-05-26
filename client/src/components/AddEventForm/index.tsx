@@ -4,6 +4,7 @@ import { object, string, array, mixed, Schema } from "yup";
 
 import { NewEntry, EntryType, FormSubmitStatus } from "../../types";
 import AddEventForm from "./AddEventForm";
+import { maxInputLengths } from "../../constants";
 
 export const baseVals = {
   description: "",
@@ -13,14 +14,22 @@ export const baseVals = {
 } as Partial<NewEntry>;
 
 const baseSchema = object().shape({
-  description: string().required("Required field"),
-  specialist: string().required("Required field"),
-  disagnosisCodes: array().ensure().of(string().required()),
+  description: string()
+    .required("Required field")
+    .max(maxInputLengths.event.description),
+  specialist: string()
+    .required("Required field")
+    .max(maxInputLengths.event.specialist),
+  disagnosisCodes: array()
+    .ensure()
+    .of(string().required())
+    .max(maxInputLengths.event.diagnosisCodes),
   type: mixed().required("Required field").oneOf(Object.keys(EntryType)),
 });
 
 const FormikReinitContext = React.createContext<{
   initEventType(newVals: object, newSchema: { [x: string]: Schema<any> }): void;
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
 }>({ initEventType: () => {} });
 
 export const useFormikReinitContext = () => useContext(FormikReinitContext);

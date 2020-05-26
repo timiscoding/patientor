@@ -7,13 +7,14 @@ import {
   Event,
   EntryType,
 } from "../../../types";
+import { maxInputLengths } from "../../../constants";
 
 const OccupationalHealthcareEvent: Event<
-  { style: React.CSSProperties; className: string },
+  {},
   NewOccupationalHealthcareEntry
-> = ({ style, className }) => {
+> = () => {
   return (
-    <div style={style} className={className}>
+    <>
       <FormField name="employerName" label="Employer" required />
       <Segment>
         <Label attached="top left">
@@ -29,7 +30,7 @@ const OccupationalHealthcareEvent: Event<
           <FormField name="sickLeave.endDate" label="End date" type="date" />
         </Form.Group>
       </Segment>
-    </div>
+    </>
   );
 };
 
@@ -39,13 +40,17 @@ OccupationalHealthcareEvent.initialValues = {
   type: EntryType.OccupationalHealthcare,
 };
 
+const {
+  employerName,
+  sickLeave,
+} = maxInputLengths.event.occupationalHealthcare;
 OccupationalHealthcareEvent.validationSchema = {
   type: string().equals(Object.keys(EntryType)).required(),
-  employerName: string().required("Required field"),
+  employerName: string().required("Required field").max(employerName),
   sickLeave: object()
     .shape({
-      startDate: string().default(""),
-      endDate: string().default(""),
+      startDate: string().default("").max(sickLeave.startDate),
+      endDate: string().default("").max(sickLeave.endDate),
     })
     .test(
       "is sick leave partially filled",

@@ -13,7 +13,7 @@ const HospitalEvent: React.FC<Props> = ({ entry, index }) => {
     <BaseEvent entry={entry} index={index}>
       <Table.Row>
         <Table.Cell>Discharge</Table.Cell>
-        <Table.Cell>
+        <Table.Cell className="word-break">
           {entry.discharge.date}
           <br />
           {entry.discharge.criteria}

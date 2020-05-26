@@ -43,13 +43,6 @@ export type GenderOption = {
   text: string;
 };
 
-// // props for select field component
-// type SelectFieldProps = {
-//   name: string;
-//   label: string;
-//   options: GenderOption[];
-// };
-
 const SelectField: React.FC<{
   name: string;
   label: string;
@@ -74,25 +67,6 @@ const SelectField: React.FC<{
     />
   );
 };
-
-// interface TextProps extends FieldProps {
-//   label: string;
-//   placeholder: string;
-// }
-
-// export const TextField: React.FC<TextProps> = ({
-//   field,
-//   label,
-//   placeholder,
-// }) => (
-//   <Form.Field>
-//     <label>{label}</label>
-//     <Field placeholder={placeholder} {...field} />
-//     <div style={{ color: "red" }}>
-//       <ErrorMessage name={field.name} />
-//     </div>
-//   </Form.Field>
-// );
 
 const DiagnosisSelection: React.FC<{
   name: string;

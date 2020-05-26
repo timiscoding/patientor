@@ -10,9 +10,11 @@ export const seedData = async () => {
   const patientList = patients.map((p) => p.id);
   const pipeline = redis.pipeline();
 
+  // seed diagnoses
   let exists = await redis.exists(keys.diagnoses);
   !exists && pipeline.set(keys.diagnoses, JSON.stringify(diagnoses));
 
+  // seed patient ids
   exists = await redis.exists(keys.patients);
   !exists && pipeline.rpush(keys.patients, patientList);
 
@@ -21,9 +23,16 @@ export const seedData = async () => {
     const entryList = [];
     for (const entry of entries) {
       entryList.push(entry.id);
-      pipeline.set(keys.entry(entry.id), JSON.stringify(entry));
+      // seed patient entry
+      exists = await redis.exists(keys.entry(entry.id));
+      !exists && pipeline.set(keys.entry(entry.id), JSON.stringify(entry));
     }
-    pipeline.set(keys.patient(patient.id), JSON.stringify(fields));
+
+    // seed patient
+    exists = await redis.exists(keys.patient(patient.id));
+    !exists && pipeline.set(keys.patient(patient.id), JSON.stringify(fields));
+
+    // seed patient entry ids
     exists = await redis.exists(keys.entries(patient.id));
     !exists &&
       entryList.length > 0 &&

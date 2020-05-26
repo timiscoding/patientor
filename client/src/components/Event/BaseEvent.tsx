@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Table, List, Icon, Accordion } from "semantic-ui-react";
+import { Table, Grid, Icon, Accordion } from "semantic-ui-react";
 import AnimateHeight from "react-animate-height";
 import { Entry } from "../../types";
 import Diagnoses from "../Diagnoses";
@@ -19,24 +19,33 @@ const BaseEvent: React.FC<Props> = ({ entry, children, index }) => {
         active={activeIndex === index}
         index={index}
         onClick={handleClick}
+        className="base-event__accordion-title"
       >
-        <Icon name="dropdown" />
-        <List horizontal relaxed="very">
-          <List.Item>{entry.date}</List.Item>
-          <List.Item>{camelCaseToSpace(entry.type)}</List.Item>
-        </List>
+        <Grid divided>
+          <Grid.Row columns={2}>
+            <Grid.Column mobile={7} tablet={3} computer={3}>
+              <Icon name="dropdown" />
+              {entry.date}
+            </Grid.Column>
+            <Grid.Column>{camelCaseToSpace(entry.type)}</Grid.Column>
+          </Grid.Row>
+        </Grid>
       </Accordion.Title>
       <div>
         <AnimateHeight height={activeIndex === index ? "auto" : 0}>
-          <Table compact definition singleLine>
+          <Table compact definition>
             <Table.Body>
               <Table.Row>
-                <Table.Cell collapsing>Description</Table.Cell>
-                <Table.Cell>{entry.description}</Table.Cell>
+                <Table.Cell>Description</Table.Cell>
+                <Table.Cell className="word-break">
+                  {entry.description}
+                </Table.Cell>
               </Table.Row>
               <Table.Row>
                 <Table.Cell>Specialist</Table.Cell>
-                <Table.Cell>{entry.specialist}</Table.Cell>
+                <Table.Cell className="word-break">
+                  {entry.specialist}
+                </Table.Cell>
               </Table.Row>
               <Table.Row>
                 <Table.Cell>Diagnoses</Table.Cell>

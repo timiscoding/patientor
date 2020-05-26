@@ -9,10 +9,16 @@ import {
   Tab,
   Segment,
   Accordion,
+  List,
+  SemanticCOLORS,
+  Responsive,
+  ResponsiveProps,
 } from "semantic-ui-react";
 import axios from "axios";
 import { useAsyncCallback } from "react-async-hook";
 import { FormikHelpers } from "formik";
+import startCase from "lodash/startCase";
+
 import { useStateValue, updatePatient, addEntry } from "../state";
 import {
   PatientEntriesPage,
@@ -20,21 +26,51 @@ import {
   NewEntry,
   Entry,
   FormSubmitStatus,
+  HealthCheckRating,
 } from "../types";
 import EventList from "./EventList";
-import { sortByDate } from "../utils";
 import { apiBaseUrl } from "../constants";
 import AddEventForm, { baseVals } from "../components/AddEventForm";
 
-const iconsByGender: Record<Gender, SemanticICONS> = {
-  [Gender.Male]: "man",
-  [Gender.Female]: "woman",
-  [Gender.Other]: "other gender",
+const iconsByGender: Record<
+  Gender,
+  { name: SemanticICONS; color: "blue" | "pink" | "grey" }
+> = {
+  [Gender.Male]: { name: "man", color: "blue" },
+  [Gender.Female]: { name: "woman", color: "pink" },
+  [Gender.Other]: { name: "other gender", color: "grey" },
+};
+
+const recentHealthRating: Record<
+  HealthCheckRating | "unknown",
+  {
+    content: string;
+    color: SemanticCOLORS;
+  }
+> = {
+  unknown: { content: "Not Available", color: "grey" },
+  [HealthCheckRating.Healthy]: {
+    content: startCase(HealthCheckRating[HealthCheckRating.Healthy]),
+    color: "green",
+  },
+  [HealthCheckRating.LowRisk]: {
+    content: startCase(HealthCheckRating[HealthCheckRating.LowRisk]),
+    color: "blue",
+  },
+  [HealthCheckRating.HighRisk]: {
+    content: startCase(HealthCheckRating[HealthCheckRating.HighRisk]),
+    color: "orange",
+  },
+  [HealthCheckRating.CriticalRisk]: {
+    content: startCase(HealthCheckRating[HealthCheckRating.CriticalRisk]),
+    color: "red",
+  },
 };
 
 const PatientPage: React.FC = () => {
   const [{ patients }, dispatch] = useStateValue();
   const [fullPatient, setFullPatient] = useState<boolean>(false);
+  const [mobile, setMobile] = useState<boolean>(false);
   const { id: patientId } = useParams();
   const { search } = useLocation();
   const query = useMemo(() => new URLSearchParams(search), [search]);
@@ -80,6 +116,11 @@ const PatientPage: React.FC = () => {
     }
   }, [dispatch, asyncAddEvent.result, patientId]);
 
+  const onWidthChange = (e: React.SyntheticEvent, data: ResponsiveProps) => {
+    const maxWidth = Responsive.onlyMobile.maxWidth as number;
+    setMobile(data.width < maxWidth);
+  };
+
   if (!fullPatient) {
     return <Loader active>Loading patient...</Loader>;
   }
@@ -91,9 +132,7 @@ const PatientPage: React.FC = () => {
         as: Accordion,
         attached: "bottom",
         key: "history list",
-        content: (
-          <EventList entries={patient.entries?.sort(sortByDate) || []} />
-        ),
+        content: <EventList entries={patient.entries || []} />,
       },
     },
     {
@@ -106,37 +145,57 @@ const PatientPage: React.FC = () => {
       },
     },
   ];
+
   return (
     <div>
+      <Responsive
+        {...Responsive.onlyMobile}
+        onUpdate={onWidthChange}
+        fireOnMount
+      />
       <Segment attached="top">
-        <Header as="h1">
-          <Icon.Group size="big">
-            <Icon name="user circle" color="grey" />
-            <Icon corner name={iconsByGender[patient.gender]} color="red" />
-          </Icon.Group>{" "}
-          <Header.Content>
-            {patient.name}
-            <Header.Subheader>
-              <Label.Group size="small">
-                <Label>
-                  <Icon name="birthday" />
-                  DOB
-                  <Label.Detail>{patient.dateOfBirth}</Label.Detail>
-                </Label>
-                <Label>
-                  <Icon name="hashtag" />
-                  SSN
-                  <Label.Detail>{patient.ssn}</Label.Detail>
-                </Label>
-                <Label>
-                  <Icon name="briefcase" />
-                  JOB
-                  <Label.Detail>{patient.occupation}</Label.Detail>
-                </Label>
-              </Label.Group>
-            </Header.Subheader>
-          </Header.Content>
+        <Header size={mobile ? "medium" : "large"} className="word-break">
+          <Icon {...iconsByGender[patient.gender]} />
+          {patient.name}
         </Header>
+        <Label.Group size="small">
+          <List divided verticalAlign="middle" size="tiny">
+            <List.Item>
+              <Label horizontal basic>
+                <Icon name="heart" color="red" />
+                Last Health Check
+              </Label>
+              <Label
+                horizontal
+                basic
+                {...recentHealthRating[
+                  patient.recentHealthCheckRating ?? "unknown"
+                ]}
+              />
+            </List.Item>
+            <List.Item>
+              <Label horizontal basic>
+                <Icon name="birthday" color="brown" />
+                DOB
+              </Label>
+              {patient.dateOfBirth}
+            </List.Item>
+            <List.Item>
+              <Label horizontal basic>
+                <Icon name="hashtag" />
+                SSN
+              </Label>
+              {patient.ssn}
+            </List.Item>
+            <List.Item className="word-break">
+              <Label horizontal basic>
+                <Icon name="briefcase" color="green" />
+                JOB
+              </Label>
+              {patient.occupation}
+            </List.Item>
+          </List>
+        </Label.Group>
       </Segment>
       <Tab
         menu={{ color: "violet", pointing: true }}

@@ -20,7 +20,7 @@ const App: React.FC = () => {
             />
           </Container>
         </Menu>
-        <Container style={{ marginTop: "5em" }}>
+        <Container className="page-content">
           <Switch>
             <Route exact path="/" render={() => <PatientListPage />} />
             <Route path="/patients/:id" component={PatientPage} />
