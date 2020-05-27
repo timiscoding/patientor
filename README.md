@@ -46,6 +46,14 @@ Run the backend
 npm run dev
 ```
 
+### Prod build
+Compile TS
+```
+npm run build
+```
+which will output the generated JS into `server/build`. The server needs certain environment vars set up
+in order to connect to Redis. See `.env.sample`
+
 ## Frontend
 
 * React in TS
@@ -58,10 +66,23 @@ quite a bit of time getting the form to render the common data fields while bein
 type (hospital/check up/occupational healthcare) dynamically. I wanted the ability to switch between
 editing the form and looking up health entries without losing what was already entered into the form.
 
-### Build
+### Dev build
 
 Stock standard Create React App with TS template
+
+For dev builds, the app uses a [proxy to handle API requests](https://create-react-app.dev/docs/proxying-api-requests-in-development).
+Update the proxy field in `package.json` to where ever the server is running, which will typically be `localhost:3001`.
+For testing on mobile, you can update it to a local ip instead. You need to restart the CRA dev server for the changes to take effect.
+
 ```
 npm install
 npm start
 ```
+
+### Prod build
+
+```
+npm run build
+```
+An env var has to be setup during the build step so that the correct backend url is injected into the code.
+Set `REACT_APP_API_URL=<BACKEND_HOST>` in whatever static web app PaaS is being used.
