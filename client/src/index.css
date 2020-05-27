@@ -12,7 +12,12 @@ input[type="date"] {
 }
 
 .word-break {
-  word-break: break-all;
+  word-break: break-word;
+}
+
+.patient-list__table-cell--text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .patient-list__add-patient-btn-wrapper {

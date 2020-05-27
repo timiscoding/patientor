@@ -11,8 +11,6 @@ import {
   Accordion,
   List,
   SemanticCOLORS,
-  Responsive,
-  ResponsiveProps,
 } from "semantic-ui-react";
 import axios from "axios";
 import { useAsyncCallback } from "react-async-hook";
@@ -68,9 +66,8 @@ const recentHealthRating: Record<
 };
 
 const PatientPage: React.FC = () => {
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients, mobile }, dispatch] = useStateValue();
   const [fullPatient, setFullPatient] = useState<boolean>(false);
-  const [mobile, setMobile] = useState<boolean>(false);
   const { id: patientId } = useParams();
   const { search } = useLocation();
   const query = useMemo(() => new URLSearchParams(search), [search]);
@@ -116,11 +113,6 @@ const PatientPage: React.FC = () => {
     }
   }, [dispatch, asyncAddEvent.result, patientId]);
 
-  const onWidthChange = (e: React.SyntheticEvent, data: ResponsiveProps) => {
-    const maxWidth = Responsive.onlyMobile.maxWidth as number;
-    setMobile(data.width < maxWidth);
-  };
-
   if (!fullPatient) {
     return <Loader active>Loading patient...</Loader>;
   }
@@ -148,11 +140,6 @@ const PatientPage: React.FC = () => {
 
   return (
     <div>
-      <Responsive
-        {...Responsive.onlyMobile}
-        onUpdate={onWidthChange}
-        fireOnMount
-      />
       <Segment attached="top">
         <Header size={mobile ? "medium" : "large"} className="word-break">
           <Icon {...iconsByGender[patient.gender]} />

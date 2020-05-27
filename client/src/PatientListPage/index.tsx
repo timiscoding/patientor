@@ -25,7 +25,10 @@ import { HealthRatingBar, Pager } from "../components";
 import { useStateValue, setPatientList } from "../state";
 
 const PatientListPage: React.FC = () => {
-  const [{ patients, itemCount, itemsPerPage }, dispatch] = useStateValue();
+  const [
+    { patients, itemCount, itemsPerPage, mobile },
+    dispatch,
+  ] = useStateValue();
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
@@ -117,7 +120,7 @@ const PatientListPage: React.FC = () => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {Array(10)
+                {Array(mobile ? 1 : 10)
                   .fill(null)
                   .map((_, i) => (
                     <Table.Row key={i}>
@@ -135,30 +138,25 @@ const PatientListPage: React.FC = () => {
               </Table.Body>
             </Table>
           ) : (
-            <Table celled striped compact attached="top">
+            <Table celled striped compact attached="top" fixed>
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Name</Table.HeaderCell>
-                  <Table.HeaderCell collapsing>Gender</Table.HeaderCell>
+                  <Table.HeaderCell width={2}>Gender</Table.HeaderCell>
                   <Table.HeaderCell>Occupation</Table.HeaderCell>
-                  <Table.HeaderCell collapsing>Health Rating</Table.HeaderCell>
+                  <Table.HeaderCell width={2}>Health Rating</Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
                 {Object.values(patients).map((patient: Patient) => (
                   <Table.Row key={patient.id}>
                     <Table.Cell>
-                      <Link
-                        to={`/patients/${patient.id}`}
-                        className="word-break"
-                      >
+                      <Link to={`/patients/${patient.id}`}>
                         {words(patient.name, /\w+/g).map(upperFirst).join(" ")}
                       </Link>
                     </Table.Cell>
                     <Table.Cell>{startCase(patient.gender)}</Table.Cell>
-                    <Table.Cell className="word-break">
-                      {startCase(patient.occupation)}
-                    </Table.Cell>
+                    <Table.Cell>{startCase(patient.occupation)}</Table.Cell>
                     <Table.Cell>
                       {Number.isInteger(
                         patient.recentHealthCheckRating as number

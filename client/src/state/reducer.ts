@@ -26,6 +26,11 @@ export const setDiagnosisList = (
   payload: diagnosisListFromApi,
 });
 
+export const setMobile = (isMobile: boolean): Action => ({
+  type: "SET_MOBILE",
+  payload: isMobile,
+});
+
 export type Action =
   | {
       type: "SET_PATIENT_LIST";
@@ -45,6 +50,10 @@ export type Action =
         id: Patient["id"];
         entry: Entry;
       };
+    }
+  | {
+      type: "SET_MOBILE";
+      payload: boolean;
     };
 
 const assertNever = (_arg: never): never => {
@@ -99,6 +108,11 @@ export const reducer = (state: State, action: Action): State => {
             ],
           },
         },
+      };
+    case "SET_MOBILE":
+      return {
+        ...state,
+        mobile: action.payload,
       };
     default:
       return assertNever(action);
