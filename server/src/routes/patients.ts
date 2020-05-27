@@ -11,7 +11,7 @@ router.get("/:id", async (req, res, next) => {
     const patient = await patientService.getPatient(req.params.id, page);
     return res.json(patient);
   } catch (err) {
-    next(err);
+    return next(err);
   }
 });
 

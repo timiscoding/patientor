@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node build/src/index.js",
+    "start": "forever build/src/index.js",
     "dev": "ts-node-dev -r dotenv/config src/index.ts",
-    "tsc": "tsc",
+    "build": "tsc",
     "lint": "eslint --ext .ts .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -28,6 +28,7 @@
     "cors": "2.8.5",
     "dotenv": "8.2.0",
     "express": "4.17.1",
+    "forever": "3.0.0",
     "ioredis": "4.17.1",
     "shortid": "2.2.15"
   }

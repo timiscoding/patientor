@@ -1,5 +1,6 @@
 import Redis from "ioredis";
 let config = {};
+
 if (process.env.NODE_ENV === "production") {
   config = {
     host: process.env.REDIS_HOST,
@@ -7,6 +8,7 @@ if (process.env.NODE_ENV === "production") {
     password: process.env.REDIS_PASSWORD,
   };
 }
+
 const redis = new Redis({ ...config, lazyConnect: true });
 
 Redis.Command.setReplyTransformer("get", (res) => {

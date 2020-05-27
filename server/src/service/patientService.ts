@@ -11,7 +11,6 @@ import {
   EntryType,
 } from "../types";
 
-// const patients: Patient[] = patientsData;
 const itemsPerPage = 10;
 const maxItems = 100;
 
