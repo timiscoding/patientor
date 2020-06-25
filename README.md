@@ -13,6 +13,37 @@ It's hosted on a heroku free tier dyno so please be patient on first page load.
 This project was completed with the main objective of learning TypeScript in
 [part 9](https://fullstackopen.com/en/part9) of the [Full stack open course](https://fullstackopen.com/en/about).
 
+## Docker dev build (easiest method)
+
+Redis db is stored in a bind mount so a dir called `redis` must exist in project root. See `docker-compose.yml`
+Client uses port 3000 and server port 3001. Client also uses create-react-app and the log output clears the
+screen before showing output which can get annoying if you want to see the server logs.
+
+You can start all services with:
+
+```
+docker-compose up
+```
+
+but it might be better to start the server in one terminal:
+
+```
+docker-compose up patientor-backend
+```
+
+and the client in another:
+
+```
+docker-compose up patientor-frontend
+```
+
+Bind mounts have been setup for the client and server `/src` dirs so that any code changes will be reflected in
+the browser. However, any npm package changes will require rebuilding the container images.
+
+```
+docker-compose up --build
+```
+
 ## Backend
 
 * node/express in TS
@@ -45,6 +76,8 @@ Run the backend
 ```
 npm run dev
 ```
+
+Server listens on port 3001 by default or can be configured via PORT env var.
 
 ### Prod build
 Compile TS

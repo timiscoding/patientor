@@ -1,15 +1,10 @@
 import Redis from "ioredis";
-let config = {};
 
-if (process.env.NODE_ENV === "production") {
-  config = {
-    host: process.env.REDIS_HOST,
-    port: process.env.REDIS_PORT,
-    password: process.env.REDIS_PASSWORD,
-  };
-}
+const host = process.env.REDIS_HOST;
+const port = parseInt(process.env.REDIS_PORT || '') || 6379;
+const password = process.env.REDIS_PASSWORD;
 
-const redis = new Redis({ ...config, lazyConnect: true });
+const redis = new Redis(port, host, { password, lazyConnect: true });
 
 Redis.Command.setReplyTransformer("get", (res) => {
   return JSON.parse(res);
