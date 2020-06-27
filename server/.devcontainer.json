@@ -1,0 +1,13 @@
+{
+  "name": "Patientor Server",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "patientor-backend",
+  "shutdownAction": "none",
+  "workspaceFolder": "/patientor-server",
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ],
+  "forwardPorts": [3001],
+  "postCreateCommand": "npm install",
+}

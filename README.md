@@ -15,34 +15,17 @@ This project was completed with the main objective of learning TypeScript in
 
 ## Docker dev build (easiest method)
 
-Redis db is stored in a bind mount so a dir called `redis` must exist in project root. See `docker-compose.yml`
-Client uses port 3000 and server port 3001. Client also uses create-react-app and the log output clears the
-screen before showing output which can get annoying if you want to see the server logs.
+Requires: Docker, VS Code and Remote development extension pack. [Install instructions](https://code.visualstudio.com/docs/remote/containers#_installation)
 
-You can start all services with:
+In the command palette, run 'Remote Containers: Open folder in container' and open the `server` dir which will build and start all the containers (redis, backend and frontend). When it's done, it will drop you into the server dir.
 
-```
-docker-compose up
-```
+In terminal, run `npm run dev` to start the server.
 
-but it might be better to start the server in one terminal:
+Currently you can only [connect to 1 container per VS Code window](https://code.visualstudio.com/docs/remote/containers-advanced#_connecting-to-multiple-containers-at-once) so open a new window, click the bottom left icon, choose 'open folder in container' and open the `client` folder.
 
-```
-docker-compose up patientor-backend
-```
+In terminal, run `npm start` to start serving the client. Then open `localhost:3000` in your browser.
 
-and the client in another:
-
-```
-docker-compose up patientor-frontend
-```
-
-Bind mounts have been setup for the client and server `/src` dirs so that any code changes will be reflected in
-the browser. However, any npm package changes will require rebuilding the container images.
-
-```
-docker-compose up --build
-```
+By default, the server runs on port 3000, client 3001 but can be changed by updating `forwardPorts` in `server/devcontainer.json` and `client/devcontainer.json` dirs. If the server port is updated, only the port part in the `proxy` field in `client/package.json` needs to be updated.
 
 ## Backend
 

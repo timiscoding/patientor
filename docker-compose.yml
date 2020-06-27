@@ -5,32 +5,27 @@ services:
     build: ./server
     image: patientor-backend
     ports:
-      - "3001:3001"
+      - 3001
     environment:
       - REDIS_HOST=redis
     depends_on:
       - redis
-    volumes:
-      - ./server/src:/patientor-server/src
     container_name: patientor-server
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
   redis:
     image: redis
     volumes:
-      - ./redis:/data
+      - redis:/data
     command: ["redis-server", "--appendonly", "yes"]
     container_name: patientor-db
   patientor-frontend:
-    build:
-      context: ./client
-      args:
-        apiurl: http://localhost:3001
+    build: ./client
     image: patientor-frontend
     ports:
-      - "3000:3000"
+      - 3000
     container_name: patientor-client
-    volumes:
-      - ./client/src:/patientor-client/src
-# dev server quits prematurely if this isn't set
-# workaround for issue with react-script 3.4.1
-# https://github.com/facebook/create-react-app/issues/8688
-    tty: true
+    command: sleep infinity
+
+volumes:
+  redis:
