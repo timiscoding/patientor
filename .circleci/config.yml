@@ -18,7 +18,7 @@ jobs:
           # must escape here doc symbols for 2.1+ config
           command: |
             curl https://cli-assets.heroku.com/install.sh | sh
-          	cat >~/.netrc \<< EOF
+            cat >~/.netrc \<< EOF
             machine api.heroku.com
               login $HEROKU_EMAIL
               password $HEROKU_TOKEN
