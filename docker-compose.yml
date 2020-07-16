@@ -2,7 +2,9 @@ version: '3'
 
 services:
   patientor-backend:
-    build: ./server
+    build:
+      context: ./server
+      dockerfile: ./server/dev.Dockerfile
     image: patientor-backend
     ports:
       - 3001
