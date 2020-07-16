@@ -23,9 +23,10 @@ jobs:
               password $HEROKU_TOKEN
             EOF
             heroku container:login
-            heroku config:set REDIS_HOST=$REDIS_HOST
-            heroku config:set REDIS_PORT=$REDIS_PORT
-            heroku config:set REDIS_PASSWORD=$REDIS_PASSWORD
+            heroku config:set --app=patientor-api \
+              REDIS_HOST=$REDIS_HOST \
+              REDIS_PORT=$REDIS_PORT \
+              REDIS_PASSWORD=$REDIS_PASSWORD
             docker push registry.heroku.com/patientor-api/web
             heroku container:release web
 
