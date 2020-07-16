@@ -8,25 +8,25 @@ jobs:
       # must setup remote docker to use docker-cli in a circleci docker executor
       - setup_remote_docker
       - run:
-        name: Build image
-        command: |
-          cd server
-          docker build -t patientor-api -f prod.Dockerfile registry.heroku.com/patientor-api/web
-          docker push registry.heroku.com/patientor-api/web
+          name: Build image
+          command: |
+            cd server
+            docker build -t patientor-api -f prod.Dockerfile registry.heroku.com/patientor-api/web
+            docker push registry.heroku.com/patientor-api/web
       - run:
-        name: Push Docker image to Heroku
-        command: |
-          curl https://cli-assets.heroku.com/install.sh | sh
-          cat >~/.netrc <<EOF
-          machine api.heroku.com
-            login $HEROKU_EMAIL
-            password $HEROKU_TOKEN
-          EOF
-          heroku container:login
-          heroku config:set REDIS_HOST=$REDIS_HOST
-          heroku config:set REDIS_PORT=$REDIS_PORT
-          heroku config:set REDIS_PASSWORD=$REDIS_PASSWORD
-          heroku container:release web
+          name: Push Docker image to Heroku
+          command: |
+            curl https://cli-assets.heroku.com/install.sh | sh
+            cat >~/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_TOKEN
+            EOF
+            heroku container:login
+            heroku config:set REDIS_HOST=$REDIS_HOST
+            heroku config:set REDIS_PORT=$REDIS_PORT
+            heroku config:set REDIS_PASSWORD=$REDIS_PASSWORD
+            heroku container:release web
 
 
 
