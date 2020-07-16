@@ -11,7 +11,7 @@ jobs:
           name: Build image
           command: |
             cd server
-            docker build -t patientor-api -f prod.Dockerfile registry.heroku.com/patientor-api/web
+            docker build -t registry.heroku.com/patientor-api/web -f prod.Dockerfile .
             docker push registry.heroku.com/patientor-api/web
       - run:
           name: Push Docker image to Heroku
