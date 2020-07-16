@@ -12,7 +12,6 @@ jobs:
           command: |
             cd server
             docker build -t registry.heroku.com/patientor-api/web -f prod.Dockerfile .
-            docker push registry.heroku.com/patientor-api/web
       - run:
           name: Push Docker image to Heroku
           # must escape here doc symbols for 2.1+ config
@@ -27,6 +26,7 @@ jobs:
             heroku config:set REDIS_HOST=$REDIS_HOST
             heroku config:set REDIS_PORT=$REDIS_PORT
             heroku config:set REDIS_PASSWORD=$REDIS_PASSWORD
+            docker push registry.heroku.com/patientor-api/web
             heroku container:release web
 
 
