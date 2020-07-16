@@ -28,7 +28,7 @@ jobs:
               REDIS_PORT=$REDIS_PORT \
               REDIS_PASSWORD=$REDIS_PASSWORD
             docker push registry.heroku.com/patientor-api/web
-            heroku container:release web
+            heroku container:release --app=patientor-api web
 
 
 
