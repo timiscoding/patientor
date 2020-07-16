@@ -20,7 +20,8 @@
     "@typescript-eslint/eslint-plugin": "2.28.0",
     "@typescript-eslint/parser": "2.28.0",
     "eslint": "6.8.0",
-    "ts-node-dev": "1.0.0-pre.44"
+    "ts-node-dev": "1.0.0-pre.44",
+    "typescript": "3.9.6"
   },
   "dependencies": {
     "@types/cors": "2.8.6",
@@ -29,7 +30,6 @@
     "express": "4.17.1",
     "forever": "3.0.0",
     "ioredis": "4.17.1",
-    "shortid": "2.2.15",
-    "typescript": "3.9.6"
+    "shortid": "2.2.15"
   }
 }

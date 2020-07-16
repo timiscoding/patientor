@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y curl && \
 
 WORKDIR /app
 COPY . .
-RUN npm run build
+RUN npm i && npm run build
 
 EXPOSE 3001
 CMD ["npm", "start"]
