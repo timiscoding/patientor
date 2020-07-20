@@ -1,9 +1,9 @@
 {
   "name": "Patientor Server",
   "dockerComposeFile": ["../docker-compose.yml"],
-  "service": "patientor-backend",
+  "service": "patientor-api",
   "shutdownAction": "none",
-  "workspaceFolder": "/patientor-server",
+  "workspaceFolder": "/patientor-api",
   "extensions": [
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode"

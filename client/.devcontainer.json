@@ -3,7 +3,7 @@
   "dockerComposeFile": [
     "../docker-compose.yml"
   ],
-  "service": "patientor-frontend",
+  "service": "patientor",
   // keep container running after vs code closes to prevent accidentally shutting down both
   // containers if closing either client or server vscode window
   "shutdownAction": "none",
@@ -12,7 +12,7 @@
     "esbenp.prettier-vscode"
   ],
   // Open the sub-folder with the source code
-  "workspaceFolder": "/patientor-client",
+  "workspaceFolder": "/patientor",
   "postCreateCommand": "npm install",
   "forwardPorts": [3000]
 }

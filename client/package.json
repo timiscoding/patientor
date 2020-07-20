@@ -50,5 +50,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://patientor-backend:3001"
+  "proxy": "http://patientor-api:3001"
 }

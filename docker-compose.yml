@@ -1,18 +1,18 @@
 version: '3'
 
 services:
-  patientor-backend:
+  patientor-api:
     build:
       context: ./server
-      dockerfile: ./server/dev.Dockerfile
-    image: patientor-backend
+      dockerfile: ./dev.Dockerfile
+    image: patientor-api:alpine-dev
     ports:
       - 3001
     environment:
       - REDIS_HOST=redis
     depends_on:
       - redis
-    container_name: patientor-server
+    container_name: patientor-api
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
   redis:
@@ -21,12 +21,12 @@ services:
       - redis:/data
     command: ["redis-server", "--appendonly", "yes"]
     container_name: patientor-db
-  patientor-frontend:
+  patientor:
     build: ./client
-    image: patientor-frontend
+    image: patientor
     ports:
       - 3000
-    container_name: patientor-client
+    container_name: patientor
     command: sleep infinity
 
 volumes:

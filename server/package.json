@@ -2,11 +2,12 @@
   "name": "patientor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "start": "forever build/src/index.js",
+    "start": "forever dist/src/index.js",
     "dev": "ts-node-dev -r dotenv/config src/index.ts",
-    "build": "tsc",
+    "tsc": "tsc",
+    "build": "webpack",
     "lint": "eslint --ext .ts .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,8 +21,11 @@
     "@typescript-eslint/eslint-plugin": "2.28.0",
     "@typescript-eslint/parser": "2.28.0",
     "eslint": "6.8.0",
+    "ts-loader": "8.0.1",
     "ts-node-dev": "1.0.0-pre.44",
-    "typescript": "3.9.6"
+    "typescript": "3.9.6",
+    "webpack": "4.43.0",
+    "webpack-cli": "3.3.12"
   },
   "dependencies": {
     "@types/cors": "2.8.6",
